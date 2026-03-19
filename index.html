@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Звіти з лабораторних робіт</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="page-header">
+    <div class="container header-top">
+      <div class="title-block">
+        <div class="title-1">ЗВІТИ З ПРАКТИЧНИХ РОБІТ</div>
+        <div class="title-2">З ДИСЦИПЛІНИ «WEB-ОРІЄНТОВАНІ ТЕХНОЛОГІЇ. FRONTEND РОЗРОБКИ»</div>
+        <div class="subtitle">Виконавець : Студент групи ІК-33 — Кутаєв Максим Олександрович</div>
+      </div>
+      <div class="photo-wrap">
+        <img src="img/student.jpg" alt="Фото студента" />
+      </div>
+    </div>
+
+    <nav class="container top-nav" id="topNav">
+      <button class="tab active" data-lab="1"><span>Практична<br/>робота №1</span></button>
+      <button class="tab" data-lab="2"><span>Практична<br/>робота №2</span></button>
+      <button class="tab" data-lab="3"><span>Практична<br/>робота №3</span></button>
+      <button class="tab" data-lab="4"><span>Практична<br/>робота №4</span></button>
+      <button class="tab" data-lab="5"><span>Практична<br/>робота №5</span></button>
+      <button class="tab" data-lab="6"><span>Практична<br/>робота №6</span></button>
+    </nav>
+  </header>
+
+  <main class="container main-grid">
+<aside class="side-menu" id="sideMenuLab1" style="display:none">
+  <button class="pill active" data-section="theme">
+    1. Тема, мета, посилання
+  </button>
+
+  <button class="pill" data-section="env">
+    2. Аналіз предметної області
+  </button>
+
+  <button class="pill pill-parent" data-toggle="lab1-modeling">
+    3. Моделювання системи ▼
+  </button>
+
+  <div class="sub-menu" data-parent="lab1-modeling">
+    <button class="pill pill-sub" data-section="modeling-actors">
+      3.1 Актори системи
+    </button>
+    <button class="pill pill-sub" data-section="modeling-bl">
+      3.2 Бізнес-логіка
+    </button>
+    <button class="pill pill-sub" data-section="modeling-fr">
+      3.3 Функціональні вимоги
+    </button>
+    <button class="pill pill-sub" data-section="modeling-nfr">
+      3.4 Нефункціональні вимоги
+    </button>
+    <button class="pill pill-sub" data-section="modeling-usecase">
+      3.5 Use-case діаграма
+    </button>
+    <button class="pill pill-sub" data-section="modeling-er">
+      3.6 ER-діаграма
+    </button>
+  </div>
+
+  <button class="pill pill-parent" data-toggle="lab1-realization">
+    4. Реалізація інтерфейсу ▼
+  </button>
+
+<div class="sub-menu" data-parent="lab1-realization">
+    <button class="pill pill-sub" data-section="realization-structure">
+      4.1 Файлова структура
+    </button>
+    <button class="pill pill-sub" data-section="realization-header">
+      4.2 Header та меню
+    </button>
+    <button class="pill pill-sub" data-section="realization-main">
+      4.3 Main та Grid-сітка
+    </button>
+    <button class="pill pill-sub" data-section="realization-footer">
+      4.4 Footer
+    </button>
+    <button class="pill pill-sub" data-section="realization-catalog">
+      4.5 Логіка каталогу
+    </button>
+    <button class="pill pill-sub" data-section="realization-cart">
+      4.6 Кошик (LocalStorage)
+    </button>
+  </div>
+
+  <button class="pill" data-section="conclusions">
+    5. Висновки
+  </button>
+</aside>
+
+    <aside class="side-menu" id="sideMenuLab2" style="display:none">      
+      <button class="pill active" data-section="theme">Тема Мета Розташування</button>
+    </aside>
+
+    <aside class="side-menu" id="sideMenuLab3" style="display:none">
+      <button class="pill active" data-section="theme3">Тема Мета Місце</button>
+    </aside>
+
+    <aside class="side-menu" id="sideMenuLab4" style="display:none">
+      <button class="pill active" data-section="theme4">Тема, мета, розташування</button>
+    </aside>
+
+    <aside class="side-menu" id="sideMenuLab5" style="display:none">
+      <button class="pill active" data-section="theme5">Тема, мета, розташування</button>
+      </div>
+    </aside>
+
+    <aside class="side-menu" id="sideMenuLab6" style="display:none">
+      <button class="pill active" data-section="theme6">Тема, мета, розташування</button>
+    </aside>
+
+    <section class="content" id="content">
+      <div class="placeholder">Місце виведення інформації</div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <div class="footer-text">© 2025 Кутаєв Максим Олександрович</div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
