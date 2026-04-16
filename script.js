@@ -18,15 +18,14 @@
       const lab1 = {
       theme: `
   <h2>1. ТЕМА, МЕТА, ПОСИЛАННЯ</h2>
-  <p><b>1.1 Тема:</b> Вибір предметної області. Аналіз, моделювання та розроблення адаптивного web-застосунку для онлайн-каталогу комп’ютерних комплектуючих.</p>
-  <p><b>1.2 Мета:</b> Сформулювати ключові складові опису інформаційної системи: актуальність, мету та завдання, об'єкт і предмет роботи, практичне значення, функціональні та нефункціональні вимоги, Use-case та ER-діаграми. На основі досвіду розроблення адаптивного інтерфейсу створити вебзастосунок для підбору ПК-комплектуючих з використанням сучасних засобів верстки для забезпечення коректного відображення на різних пристроях.</p>
-
+  <p><b>1.1 Тема:</b> Розроблення адаптивного вебзастосунку та серверної частини (Backend) для онлайн-каталогу комп’ютерних комплектуючих.</p>
+<p><b>1.2 Мета створення застосунку:</b> Розробка зручної платформи електронної комерції для швидкого підбору, фільтрації та замовлення ПК-запчастин. Головна ціль — забезпечити якісний користувацький досвід (UX) на будь-яких пристроях, а також автоматизувати бізнес-процеси інтернет-магазину (управління товарами, обробка кошика та замовлень) шляхом створення надійної серверної інфраструктури та REST API.</p>
   <h3 class="muted">1.3Посилання</h3>
 
   <div class="link-buttons">
-    <a class="btn" href="https://github.com/MaixmK/IK-33_appWEB-Kutaiev-Maksym-FIOT-2025" target="_blank" rel="noopener">Репозиторій застосунку</a>
-    <a class="btn" href="https://maixmk.github.io/IK-33_appWEB-Kutaiev-Maksym-FIOT-2025/" target="_blank" rel="noopener">Жива сторінка застосунку</a>
-    <a class="btn" href="https://github.com/MaixmK/IK-33_appRECORD-Kutaiev-Maksym-FIOT-2025" target="_blank" rel="noopener">Репозиторій звітів</a>
+    <a class="btn" href="https://github.com/MaixmK/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій застосунку</a>
+    <a class="btn" href="https://maixmk.github.io/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026//" target="_blank" rel="noopener">Жива сторінка застосунку</a>
+    <a class="btn" href="https://github.com/MaixmK/IK-33_appRECORD-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій звітів</a>
   </div>
   `,
 
@@ -413,12 +412,382 @@ function calcSummary(items) {
     <p><b>Шляхи вдосконалення:</b></p>
     <p>Оскільки поточна версія застосунку є клієнтським прототипом, головним напрямом подальшого вдосконалення є розробка повноцінної Backend-частини та підключення реальної реляційної бази даних згідно зі спроєктованою ER-діаграмою. Також доцільно реалізувати серверну автентифікацію користувачів та створити панель адміністратора для зручного керування каталогом і замовленнями.</p>
   `
+  ,
+
+  'backend-intro': `
+    <h2>Частина 2. Основи роботи з Node.js та Express.js</h2>
+    <p><b>Мета:</b> Ознайомитися з принципами роботи HTTP-серверів, вивчити основи створення вебсерверів на Node.js, ознайомитися з архітектурою REST API та навчитися створювати маршрути для обробки HTTP-запитів.</p>
+    <p>Для виконання роботи було створено окрему директорію <code>lab1-rest-api</code>, ініціалізовано проєкт (<code>npm init -y</code>) та встановлено фреймворк Express.js (<code>npm install express</code>). Усю логіку REST API адаптовано під предметну область — каталог комп'ютерних комплектуючих.</p>
+  `,
+
+  'backend-task2-3': `
+    <h2>Завдання 2 та 3: Базовий сервер і GET-запит</h2>
+    <p>Реалізовано HTTP-сервер, який на кореневому маршруті повертає вітальне повідомлення "Hello from Node.js server" . Також створено маршрут <code>GET /products</code>, який повертає список комплектуючих у форматі JSON .</p>
+    
+    <p><i>Фрагмент коду (Ініціалізація та GET маршрути):</i></p>
+    ${codeBlock(`
+const express = require("express");
+const app = express();
+app.use(express.json());
+
+let products = [
+  { id: 1, name: "AMD Ryzen 5 5600", category: "CPU", price: 5000 },
+  { id: 2, name: "NVIDIA GeForce RTX 4060", category: "GPU", price: 14000 }
+];
+
+// Завдання 2
+app.get("/", (req, res) => {
+  res.send("Hello from Node.js server");
+});
+
+// Завдання 3
+app.get("/products", (req, res) => {
+  res.json(products);
+});`)}
+
+<img src="img/node.png" alt="Результат GET-запиту" style="max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 10px;">
+<img src="img/get.png" alt="Результат GET-запиту" style="max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 10px;">
+  `,
+
+  'backend-task4': `
+    <h2>Завдання 4: POST-запит (Додавання товару)</h2>
+    <p>Створено маршрут <code>POST /products</code> для додавання нового товару до масиву. Дані приймаються з тіла запиту (req.body) і містять поля: id, name, category, price (адаптовано замість студентів).</p>
+    
+    <p><i>Фрагмент коду (POST маршрут):</i></p>
+    ${codeBlock(`
+app.post("/products", (req, res) => {
+  const newProduct = {
+    id: req.body.id,
+    name: req.body.name,
+    category: req.body.category,
+    price: req.body.price
+  };
+  
+  products.push(newProduct);
+  res.status(201).json({ message: "Товар успішно додано", product: newProduct });
+});`)}
+<img src="img/post.png" alt="Результат POST-запиту" style="max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 10px;">
+  `,
+
+  'backend-task5': `
+    <h2>Завдання 5: PUT та DELETE-запити (Оновлення та видалення)</h2>
+    <p>Для керування даними створено маршрути <code>PUT /products/:id</code> та <code>DELETE /products/:id</code> . Вони знаходять товар за переданим ідентифікатором у параметрах URL та відповідно оновлюють його властивості або видаляють з масиву.</p>
+    
+    <p><i>Фрагмент коду (PUT та DELETE маршрути):</i></p>
+    ${codeBlock(`
+app.put("/products/:id", (req, res) => {
+  const productId = parseInt(req.params.id);
+  const index = products.findIndex(p => p.id === productId);
+
+  if (index !== -1) {
+    products[index].name = req.body.name || products[index].name;
+    products[index].category = req.body.category || products[index].category;
+    products[index].price = req.body.price || products[index].price;
+    res.json(products[index]);
+  } else {
+    res.status(404).json({ message: "Товар не знайдено" });
+  }
+});
+
+app.delete("/products/:id", (req, res) => {
+  const productId = parseInt(req.params.id);
+  const initialLength = products.length;
+  products = products.filter(p => p.id !== productId);
+
+  if (products.length < initialLength) {
+    res.json({ message: "Товар успішно видалено" });
+  } else {
+    res.status(404).json({ message: "Товар не знайдено" });
+  }
+});`)}
+<img src="img/put.png" alt="Результат PUT та DELETE запитів" style="max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 10px;">
+<img src="img/delete.png" alt="Результат PUT та DELETE запитів" style="max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 10px;">
+  `,
 };
 
 
 
 
-      const lab2 = {};
+      const lab2 = {
+  'sel-tags': `
+    <h2>1. ТЕМА, МЕТА, ПОСИЛАННЯ</h2>
+    <p><b>1.1 Тема:</b> Створення бази даних у MySQL. Підключення Node.js до MySQL. Робота з ORM Sequelize.</p>
+
+    <p><b>1.2 Мета:</b> Набути практичних навичок створення реляційної бази даних у MySQL для власного вебзастосунку онлайн-каталогу комп’ютерних комплектуючих, виконання основних SQL-запитів, підключення серверного застосунку на Node.js до бази даних та використання ORM Sequelize для опису моделей і зв’язків між ними.</p>
+
+    <h3 class="muted">1.3 Посилання</h3>
+    <div class="link-buttons">
+      <a class="btn" href="https://github.com/MaixmK/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій застосунку</a>
+      <a class="btn" href="https://maixmk.github.io/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026//" target="_blank" rel="noopener">Жива сторінка застосунку</a>
+      <a class="btn" href="https://github.com/MaixmK/IK-33_appRECORD-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій звітів</a>
+    </div>
+  `,
+
+  'theory': `
+    <h2>2. КОРОТКІ ТЕОРЕТИЧНІ ВІДОМОСТІ</h2>
+
+    <p><b>MySQL</b> є реляційною системою керування базами даних, у якій інформація зберігається у вигляді таблиць, пов’язаних між собою первинними та зовнішніми ключами. Для роботи з даними використовується мова SQL, яка дозволяє створювати структуру бази даних, додавати записи, змінювати їх, видаляти та виконувати вибірки.</p>
+
+    <p><b>Node.js</b> є серверним середовищем виконання JavaScript. Воно дозволяє створювати backend-застосунки, які можуть працювати з API, мережею, файлами та базами даних. У цій лабораторній роботі Node.js використовується для підключення до MySQL і реалізації серверної логіки.</p>
+
+    <p><b>mysql2</b> — це драйвер для прямого підключення Node.js до MySQL. Він дозволяє надсилати SQL-запити з коду JavaScript і отримувати результати їх виконання безпосередньо в програмі.</p>
+
+    <p><b>Sequelize</b> є ORM-бібліотекою для Node.js. Вона дозволяє працювати з таблицями бази даних через JavaScript-моделі, що робить код більш читабельним, структурованим і зменшує кількість SQL-запитів, які треба писати вручну. Також Sequelize дозволяє описувати зв’язки між сутностями, наприклад один-до-багатьох.</p>
+
+    <p><b>Express</b> використовується як серверний фреймворк для Node.js. За його допомогою було реалізовано маршрути API для роботи з категоріями, товарами, замовленнями та позиціями замовлення.</p>
+  `,
+
+  'task': `
+    <h2>3. ПОСТАНОВКА ЗАДАЧІ</h2>
+
+    <p>У межах лабораторної роботи було створено базу даних для вебзастосунку онлайн-каталогу комп’ютерних комплектуючих. Предметна область включає користувачів системи, категорії товарів, товари, замовлення та позиції замовлень.</p>
+
+    <p>Користувач у системі може мати роль звичайного клієнта або адміністратора. Категорії використовуються для групування товарів за типом комплектуючих. Кожен товар належить до певної категорії, має назву, опис, ціну, кількість на складі та рейтинг. Користувач може створювати замовлення, а кожне замовлення складається з набору позицій, що містять конкретні товари та їх кількість.</p>
+
+    <p>Для реалізації цієї логіки було спроєктовано такі таблиці: <code>users</code>, <code>categories</code>, <code>products</code>, <code>orders</code>, <code>order_items</code>. Між ними реалізовано зв’язки таким чином: одна категорія може містити багато товарів, один користувач може мати багато замовлень, одне замовлення може складатися з багатьох позицій, а один товар може входити до багатьох різних замовлень.</p>
+  `,
+
+  'db-structure': `
+    <h2>4. ОПИС СТРУКТУРИ БАЗИ ДАНИХ</h2>
+
+    <p><b>Таблиця users</b> призначена для збереження інформації про користувачів системи. У ній містяться ім’я користувача, електронна пошта, хеш пароля, роль та дата створення запису.</p>
+
+    <p><b>Таблиця categories</b> зберігає перелік категорій товарів, наприклад процесори, материнські плати, оперативна пам’ять, відеокарти, накопичувачі, корпуси, блоки живлення та охолодження.</p>
+
+    <p><b>Таблиця products</b> містить відомості про товари. Для кожного товару зберігається назва, опис, ціна, залишок на складі, рейтинг та посилання на категорію, до якої він належить.</p>
+
+    <p><b>Таблиця orders</b> реалізує процес оформлення замовлення. У ній міститься посилання на користувача, загальна вартість замовлення, статус і дата створення.</p>
+
+    <p><b>Таблиця order_items</b> зберігає склад замовлення. Для кожного запису фіксуються посилання на замовлення та товар, кількість і ціна товару на момент покупки.</p>
+  `,
+
+  'mysql-create': `
+    <h2>5. РЕАЛІЗАЦІЯ В MYSQL</h2>
+
+    <p>На першому етапі було створено базу даних <code>pc_components_store</code>. Після цього у ній були створені всі необхідні таблиці з первинними та зовнішніми ключами. Використання зовнішніх ключів забезпечило цілісність даних і правильний зв’язок між сутностями предметної області.</p>
+
+    <p><i>Фрагмент SQL-коду для створення бази даних:</i></p>
+    ${codeBlock(`
+CREATE DATABASE pc_components_store;
+USE pc_components_store;
+`)}
+
+    <p><i>Фрагмент SQL-коду для створення таблиць:</i></p>
+    ${codeBlock(`
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    stock_count INT NOT NULL DEFAULT 0,
+    rating DECIMAL(3,2) DEFAULT 0.00,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    status ENUM('new', 'paid', 'cancelled') NOT NULL DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+`)}
+
+    <img src="img/lab2/mysql-create.png" alt="Створення бази даних і таблиць" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 1 — Ініціалізація бази даних і таблиць у MySQL Workbench</i></p>
+  `,
+
+  'sql-queries': `
+    <h2>6. ВИКОНАННЯ SQL-ЗАПИТІВ</h2>
+
+    <p>У процесі виконання лабораторної роботи були реалізовані стандартні SQL-операції <code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code> та <code>DELETE</code>. За допомогою <code>INSERT</code> до таблиць додавалися користувачі, категорії, товари, замовлення та позиції замовлення. За допомогою <code>SELECT</code> отримувалися записи з таблиць, що дозволяло перевіряти правильність збережених даних. Операція <code>UPDATE</code> використовувалась для зміни ціни товару, кількості на складі або статусу замовлення. Операція <code>DELETE</code> дозволяла видаляти тестові записи з таблиць.</p>
+
+    <p><i>Приклади SQL-запитів:</i></p>
+    ${codeBlock(`
+INSERT INTO categories (name)
+VALUES ('Процесори'), ('Відеокарти');
+
+SELECT * FROM categories;
+
+UPDATE products
+SET price = 13500.00
+WHERE id = 2;
+
+DELETE FROM order_items
+WHERE id = 1;
+`)}
+  `,
+
+  'node-mysql': `
+    <h2>7. ПІДКЛЮЧЕННЯ NODE.JS ДО MYSQL</h2>
+
+    <p>Після створення бази даних було налаштовано Node.js-застосунок. Для прямого підключення до MySQL використано пакет <code>mysql2</code>. У конфігураційному файлі були вказані параметри з’єднання: адреса сервера, назва бази, ім’я користувача та пароль. Це дало змогу виконувати SQL-запити безпосередньо з JavaScript-коду.</p>
+
+    <p><i>Фрагмент коду підключення:</i></p>
+    ${codeBlock(`
+const mysql = require('mysql2');
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '********',
+    database: 'pc_components_store'
+});
+
+connection.connect((err) => {
+    if (err) {
+        console.error('Помилка підключення:', err);
+    } else {
+        console.log('Підключення до MySQL успішне');
+    }
+});
+`)}
+
+    <p>Окремо було створено файл для демонстрації роботи з <code>mysql2</code>, у якому реалізовано вибірку категорій, додавання тестового запису, його оновлення та видалення. Таким чином було підтверджено можливість прямої взаємодії Node.js застосунку з MySQL.</p>
+
+    <img src="img/lab2/node-mysql.png" alt="Підключення Node.js до MySQL" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 3 — Підключення Node.js до MySQL через mysql2</i></p>
+  `,
+
+  'sequelize': `
+    <h2>8. ВИКОРИСТАННЯ SEQUELIZE</h2>
+
+    <p>Для більш зручної роботи з базою даних у проєкті також було використано ORM Sequelize. Для кожної таблиці створено відповідну модель: <code>User</code>, <code>Category</code>, <code>Product</code>, <code>Order</code>, <code>OrderItem</code>. У моделях були описані поля таблиць, типи даних, обмеження та значення за замовчуванням.</p>
+
+    <p><i>Фрагмент коду підключення Sequelize:</i></p>
+    ${codeBlock(`
+const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize(
+    'pc_components_store',
+    'root',
+    '********',
+    {
+        host: 'localhost',
+        dialect: 'mysql'
+    }
+);
+
+module.exports = sequelize;
+`)}
+
+    <p><i>Фрагмент моделі Category:</i></p>
+    ${codeBlock(`
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+const Category = sequelize.define('Category', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    }
+}, {
+    tableName: 'categories',
+    timestamps: false
+});
+
+module.exports = Category;
+`)}
+
+    <p>Після цього були налаштовані зв’язки між моделями. Модель <code>Category</code> пов’язана з моделлю <code>Product</code> через зв’язок один-до-багатьох. Аналогічно, модель <code>User</code> має багато замовлень, модель <code>Order</code> має багато позицій замовлення, а модель <code>Product</code> також може входити до багатьох позицій замовлення.</p>
+
+    <p><i>Фрагмент коду зв’язків:</i></p>
+    ${codeBlock(`
+Category.hasMany(Product, { foreignKey: 'category_id' });
+Product.belongsTo(Category, { foreignKey: 'category_id' });
+
+User.hasMany(Order, { foreignKey: 'user_id' });
+Order.belongsTo(User, { foreignKey: 'user_id' });
+
+Order.hasMany(OrderItem, { foreignKey: 'order_id' });
+OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
+
+Product.hasMany(OrderItem, { foreignKey: 'product_id' });
+OrderItem.belongsTo(Product, { foreignKey: 'product_id' });
+`)}
+  `,
+
+  'app-work': `
+    <h2>9. ОПИС РОБОТИ ЗАСТОСУНКУ</h2>
+
+    <p>У межах лабораторної роботи було реалізовано серверний застосунок для онлайн-каталогу комп’ютерних комплектуючих. Сервер запускається на Node.js і використовує Express. Застосунок надає маршрути для роботи з категоріями, товарами, замовленнями та позиціями замовлення.</p>
+
+    <p>Для демонстрації роботи серверної частини було реалізовано CRUD-операції для основних сутностей вебзастосунку: <code>categories</code>, <code>products</code>, <code>orders</code> та <code>order_items</code>. Перевірка роботи API здійснювалася за допомогою Postman, що дозволило підтвердити коректне виконання операцій отримання, створення, оновлення та видалення записів.</p>
+
+    <p><i>Фрагмент коду підключення маршрутів:</i></p>
+    ${codeBlock(`
+app.use('/categories', categoryRoutes);
+app.use('/products', productRoutes);
+app.use('/orders', orderRoutes);
+app.use('/order-items', orderItemRoutes);
+`)}
+
+    <p>Маршрут <code>GET /categories</code> використовується для отримання списку категорій. Маршрут <code>POST /products</code> дозволяє додати новий товар до каталогу. Через маршрут <code>PUT /products/:id</code> виконується редагування товару, а <code>DELETE /products/:id</code> використовується для його видалення. Аналогічно були реалізовані маршрути для замовлень та складу замовлення.</p>
+  `,
+
+  'results': `
+    <h2>10. РЕЗУЛЬТАТИ РОБОТИ</h2>
+
+    <p>У результаті виконання лабораторної роботи було створено повноцінну базу даних для системи онлайн-каталогу комп’ютерних комплектуючих. Було реалізовано таблиці для користувачів, категорій, товарів, замовлень та позицій замовлень. Підключення Node.js до MySQL було виконано двома способами: через драйвер <code>mysql2</code> та через ORM <code>Sequelize</code>. У межах застосунку були продемонстровані основні CRUD-операції, а також реалізовані зв’язки між таблицями відповідно до моделі предметної області.</p>
+
+    <p><b>Приклади перевірки API в Postman:</b></p>
+
+    <img src="img/lab2/get-categories.png" alt="GET categories" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 5 — Отримання списку категорій</i></p>
+
+    <img src="img/lab2/post-product.png" alt="POST product" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 6 — Створення нового товару</i></p>
+
+    <img src="img/lab2/put-product.png" alt="PUT product" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 7 — Редагування товару</i></p>
+
+    <img src="img/lab2/delete-product.png" alt="DELETE product" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p>Оброка помилки</p>
+    <img src="img/lab2/delete404.png" alt="DELETE product" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 8 — Видалення товару</i></p>
+
+    <img src="img/lab2/get-orders.png" alt="GET orders" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 9 — Отримання списку замовлень</i></p>
+
+    <img src="img/lab2/post-order-item.png" alt="POST order item" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+    <p><i>Рис. 10 — Створення позиції замовлення</i></p>
+  `,
+
+  'conclusion': `
+    <h2>11. ВИСНОВОК</h2>
+
+    <p>У ході виконання лабораторної роботи було досягнуто поставленої мети. Було створено базу даних у MySQL, спроєктовано структуру таблиць відповідно до теми власного вебзастосунку, реалізовано основні SQL-запити, налаштовано підключення Node.js до MySQL та використано ORM Sequelize для роботи з даними. Також було реалізовано зв’язки між таблицями за принципом One-to-Many.</p>
+
+    <p>Отже, лабораторна робота дозволила закріпити знання з організації баз даних, роботи з SQL, налаштування серверного підключення та побудови backend-частини застосунку на Node.js з використанням сучасних інструментів. Додатково було реалізовано та перевірено CRUD-операції через REST API, що дозволило наблизити лабораторну роботу до структури реального вебзастосунку.</p>
+  `
+};
       const lab3 = {};
       const lab4 = {};
       const lab5 = {};
@@ -524,8 +893,19 @@ function calcSummary(items) {
             });
 
       sideMenuLab2.addEventListener('click', (e) => {
-        const btn = e.target.closest('.pill'); if (!btn) return;
-        navigate(2, btn.dataset.section, true);
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        if (btn.classList.contains('pill-parent')) {
+          const key = btn.dataset.toggle;
+          const sub = sideMenuLab2.querySelector(`.sub-menu[data-parent="${key}"]`);
+          if (sub) sub.classList.toggle('open');
+          return;
+        }
+
+        if (btn.classList.contains('pill') && btn.dataset.section) {
+          navigate(2, btn.dataset.section, true);
+        }
       });
 
       sideMenuLab3.addEventListener('click', (e) => {
