@@ -505,9 +505,6 @@ app.delete("/products/:id", (req, res) => {
   `,
 };
 
-
-
-
       const lab2 = {
   'sel-tags': `
     <h2>1. ТЕМА, МЕТА, ПОСИЛАННЯ</h2>
@@ -520,6 +517,7 @@ app.delete("/products/:id", (req, res) => {
       <a class="btn" href="https://github.com/MaixmK/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій застосунку</a>
       <a class="btn" href="https://maixmk.github.io/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026//" target="_blank" rel="noopener">Жива сторінка застосунку</a>
       <a class="btn" href="https://github.com/MaixmK/IK-33_appRECORD-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій звітів</a>
+      <a class="btn" href="https://github.com/MaixmK/backend" target="_blank" rel="noopener">Репозиторій Backend - частини</a>
     </div>
   `,
 
@@ -788,7 +786,579 @@ app.use('/order-items', orderItemRoutes);
     <p>Отже, лабораторна робота дозволила закріпити знання з організації баз даних, роботи з SQL, налаштування серверного підключення та побудови backend-частини застосунку на Node.js з використанням сучасних інструментів. Додатково було реалізовано та перевірено CRUD-операції через REST API, що дозволило наблизити лабораторну роботу до структури реального вебзастосунку.</p>
   `
 };
-      const lab3 = {};
+
+      const lab3 = {
+  theme3: `
+    <h2>1. ТЕМА, МЕТА, ПОСИЛАННЯ</h2>
+    <p><b>1.1 Тема:</b> Розробка функціонального REST API. Реєстрація та авторизація користувачів. Валідація даних і обробка помилок.</p>
+
+    <p><b>1.2 Мета:</b> Набути практичних навичок реалізації реєстрації та авторизації користувачів у власному backend-застосунку, додати валідацію даних, обробку помилок, JWT-аутентифікацію, захищені маршрути, рольову модель доступу та розширені механізми безпеки.</p>
+
+    <h3 class="muted">1.3 Посилання</h3>
+    <div class="link-buttons">
+      <a class="btn" href="https://github.com/MaixmK/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій застосунку</a>
+      <a class="btn" href="https://maixmk.github.io/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026//" target="_blank" rel="noopener">Жива сторінка застосунку</a>
+      <a class="btn" href="https://github.com/MaixmK/IK-33_appRECORD-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій звітів</a>
+      <a class="btn" href="https://github.com/MaixmK/backend" target="_blank" rel="noopener">Репозиторій Backend - частини</a>
+    </div>
+  `,
+
+  theory3: `
+    <h2>2. ТЕОРЕТИЧНІ ВІДОМОСТІ</h2>
+
+    <p><b>REST API</b> — це архітектурний стиль взаємодії клієнта і сервера через HTTP-протокол. У REST усе розглядається як ресурс, а доступ до нього здійснюється через URL та стандартні HTTP-методи: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.</p>
+
+    <p><b>Реєстрація користувача</b> — це процес створення нового облікового запису. На цьому етапі сервер перевіряє правильність вхідних даних, хешує пароль та зберігає користувача в базі даних.</p>
+
+    <p><b>Авторизація</b> — це перевірка користувача під час входу в систему. Після успішної перевірки email і пароля сервер генерує токен доступу.</p>
+
+    <p><b>JWT</b> використовується для ідентифікації користувача під час подальших запитів до сервера. Токен передається клієнтом у заголовку <code>Authorization</code> і перевіряється на сервері через middleware.</p>
+
+    <p><b>Валідація даних</b> потрібна для того, щоб не допустити некоректних даних у систему. У межах лабораторної роботи перевіряються обов’язкові поля, формат email, довжина пароля та підтвердження пароля.</p>
+
+    <p><b>Обробка помилок</b> реалізується через конструкцію <code>try/catch</code> та повернення коректних HTTP-кодів стану, наприклад <code>400</code>, <code>401</code>, <code>403</code>, <code>404</code> і <code>500</code>.</p>
+  `,
+
+  task3: `
+    <h2>3. ПОСТАНОВКА ЗАДАЧІ</h2>
+
+    <p>У межах лабораторної роботи необхідно було розширити існуючий backend вебзастосунку онлайн-каталогу комп’ютерних комплектуючих та додати в нього модуль автентифікації і захисту доступу.</p>
+
+    <p>Для цього потрібно було реалізувати:</p>
+    <ul>
+      <li>реєстрацію користувача;</li>
+      <li>авторизацію користувача;</li>
+      <li>валідацію вхідних даних;</li>
+      <li>обробку помилок сервера;</li>
+      <li>захищений маршрут профілю;</li>
+      <li>рольову модель <code>user/admin</code>;</li>
+      <li>logout, оновлення профілю та зміну пароля;</li>
+      <li>refresh token;</li>
+      <li>обмеження кількості спроб входу;</li>
+      <li>відновлення пароля та підтвердження email;</li>
+      <li>заготівлю для Google login.</li>
+    </ul>
+
+    <p>Усі ці можливості інтегруються в уже створений backend із попередньої лабораторної роботи, тобто нова функціональність не є окремим проєктом, а розширює існуючу серверну систему.</p>
+  `,
+
+  structure3: `
+    <h2>4. ФАЙЛОВА СТРУКТУРА ПРОЄКТУ</h2>
+
+    <p>Для реалізації функціоналу ЛР №3 було розширено існуючу структуру backend-проєкту. Було додано нові middleware, утиліти та маршрути для роботи з автентифікацією.</p>
+
+    ${codeBlock(`
+backend/
+│
+├── config/
+│   └── database.js
+│
+├── models/
+│   ├── User.js
+│   ├── Category.js
+│   ├── Product.js
+│   ├── Order.js
+│   └── OrderItem.js
+│
+├── routes/
+│   ├── auth.routes.js
+│   ├── category.routes.js
+│   ├── product.routes.js
+│   ├── order.routes.js
+│   └── orderItem.routes.js
+│
+├── middleware/
+│   ├── auth.middleware.js
+│   ├── role.middleware.js
+│   └── loginLimiter.middleware.js
+│
+├── utils/
+│   ├── token.js
+│   ├── logger.js
+│   └── randomToken.js
+│
+├── server.js
+├── package.json
+└── package-lock.json
+`)}
+  `,
+
+  install3: `
+    <h2>5. ВСТАНОВЛЕННЯ НЕОБХІДНИХ БІБЛІОТЕК</h2>
+
+    <p>Для реалізації лабораторної роботи було використано бібліотеки <code>express</code>, <code>bcryptjs</code> і <code>jsonwebtoken</code>. Вони потрібні для створення серверних маршрутів, хешування паролів і генерації JWT токенів.</p>
+
+    ${codeBlock(`
+npm install express bcryptjs jsonwebtoken
+`)}
+
+    <p>Додатково в межах already existing backend-проєкту продовжували використовуватися Sequelize і mysql2, які були підключені на попередньому етапі.</p>
+  `,
+
+  usermodel3: `
+    <h2>6. МОДЕЛЬ КОРИСТУВАЧА</h2>
+
+    <p>Для зберігання даних користувачів у базі даних використовується модель <code>User</code>. Вона відповідає таблиці <code>users</code> і містить базові поля для реєстрації, авторизації, підтвердження email та відновлення пароля.</p>
+
+    ${codeBlock(`
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+const User = sequelize.define('User', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password_hash: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.ENUM('user', 'admin'),
+        allowNull: false,
+        defaultValue: 'user'
+    },
+    is_email_confirmed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    email_confirm_token: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    reset_password_token: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    }
+}, {
+    tableName: 'users',
+    timestamps: false
+});
+
+module.exports = User;
+`)}
+
+    <p>У цій моделі поле <code>password_hash</code> використовується для зберігання хешованого пароля, а не пароля у відкритому вигляді. Також модель містить додаткові поля для підтвердження email і відновлення пароля.</p>
+  `,
+
+  auth3: `
+    <h2>7. РЕЄСТРАЦІЯ ТА АВТОРИЗАЦІЯ КОРИСТУВАЧА</h2>
+
+    <p>Основний функціонал лабораторної роботи реалізовано у файлі <code>auth.routes.js</code>. У ньому містяться маршрути для реєстрації, логіну, підтвердження email, оновлення профілю, зміни пароля, видалення акаунта та інших дій, пов’язаних із користувачем.</p>
+
+    <p><b>Реєстрація</b> створює нового користувача в базі даних. Перед збереженням сервер перевіряє всі поля, хешує пароль і генерує токен підтвердження email.</p>
+
+    ${codeBlock(`
+// Реєстрація
+router.post('/register', async (req, res) => {
+    const { name, email, password, confirmPassword, role } = req.body;
+
+    if (!name || !email || !password || !confirmPassword) {
+        return res.status(400).json({ message: 'Всі поля обов’язкові' });
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(400).json({ message: 'Паролі не співпадають' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const emailConfirmToken = generateRandomToken();
+
+    await User.create({
+        name,
+        email,
+        password_hash: hashedPassword,
+        role: role === 'admin' ? 'admin' : 'user',
+        is_email_confirmed: false,
+        email_confirm_token: emailConfirmToken
+    });
+
+    return res.status(201).json({
+        message: 'Користувача створено. Підтвердьте email.',
+        emailConfirmToken
+    });
+});
+`)}
+
+    <p><b>Авторизація</b> перевіряє email і пароль, а після успішної перевірки повертає користувачу <code>accessToken</code> і <code>refreshToken</code>.</p>
+
+    ${codeBlock(`
+// Логін
+router.post('/login', loginLimiter, async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+        return res.status(400).json({ message: 'Користувача не знайдено' });
+    }
+
+    if (!user.is_email_confirmed) {
+        return res.status(403).json({ message: 'Email не підтверджено' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Невірний пароль' });
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    return res.status(200).json({
+        message: 'Авторизація успішна',
+        accessToken,
+        refreshToken
+    });
+});
+`)}
+  `,
+
+  validation3: `
+    <h2>8. ВАЛІДАЦІЯ ДАНИХ І ОБРОБКА ПОМИЛОК</h2>
+
+    <p>У серверній частині було додано перевірку вхідних даних. Зокрема перевіряється наявність обов’язкових полів, правильність email, довжина пароля, відповідність пароля та підтвердження пароля, а також дублювання email у базі даних.</p>
+
+    ${codeBlock(`
+const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+
+if (!name || !email || !password || !confirmPassword) {
+    return res.status(400).json({ message: 'Всі поля обов’язкові' });
+}
+
+if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Невірний формат email' });
+}
+
+if (password.length < 6) {
+    return res.status(400).json({ message: 'Пароль мінімум 6 символів' });
+}
+
+if (password !== confirmPassword) {
+    return res.status(400).json({ message: 'Паролі не співпадають' });
+}
+`)}
+
+    <p>Для обробки помилок використовується конструкція <code>try/catch</code>. Також було додано окремий логер помилок, який виводить інформацію в консоль і може записувати її у файл.</p>
+
+    ${codeBlock(`
+const { logError } = require('../utils/logger');
+
+try {
+    // логіка
+} catch (error) {
+    logError('Помилка при реєстрації', error);
+    return res.status(500).json({ message: 'Помилка сервера' });
+}
+`)}
+  `,
+
+  middleware3: `
+    <h2>9. JWT, MIDDLEWARE І ЗАХИЩЕНІ МАРШРУТИ</h2>
+
+    <p>Для доступу до захищених ресурсів було реалізовано JWT-аутентифікацію. Після логіну сервер повертає токен, який клієнт передає в заголовку <code>Authorization</code>. Для перевірки токена використовується middleware.</p>
+
+    ${codeBlock(`
+const jwt = require('jsonwebtoken');
+const { ACCESS_SECRET } = require('../utils/token');
+
+module.exports = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Немає токена' });
+    }
+
+    try {
+        const decoded = jwt.verify(authHeader, ACCESS_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(401).json({ message: 'Невірний токен' });
+    }
+};
+`)}
+
+    <p>Після цього було реалізовано захищений маршрут <code>/auth/profile</code>, який повертає інформацію про поточного користувача лише за наявності валідного токена.</p>
+
+    ${codeBlock(`
+router.get('/profile', authMiddleware, async (req, res) => {
+    const user = await User.findByPk(req.user.id, {
+        attributes: ['id', 'name', 'email', 'role', 'created_at']
+    });
+
+    return res.status(200).json({
+        message: 'Доступ дозволено',
+        user
+    });
+});
+`)}
+  `,
+
+  advanced3: `
+    <h2>10. РОЗШИРЕНІ МОЖЛИВОСТІ БЕЗПЕКИ</h2>
+
+    <p>У лабораторній роботі також було реалізовано низку додаткових механізмів безпеки.</p>
+
+    <p><b>Рольова модель доступу</b> дозволяє обмежити доступ до окремих маршрутів лише для користувачів з роллю <code>admin</code>.</p>
+
+    ${codeBlock(`
+module.exports = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Користувач не авторизований' });
+        }
+
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ message: 'Доступ заборонено' });
+        }
+
+        next();
+    };
+};
+`)}
+
+    <p><b>Refresh token</b> дозволяє оновлювати короткоживучий access token без повторного логіну.</p>
+
+    ${codeBlock(`
+router.post('/refresh-token', (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return res.status(401).json({ message: 'Немає refresh token' });
+    }
+
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+
+    const accessToken = jwt.sign(
+        { id: decoded.id, email: decoded.email },
+        ACCESS_SECRET,
+        { expiresIn: '15m' }
+    );
+
+    return res.status(200).json({ accessToken });
+});
+`)}
+
+    <p><b>Обмеження спроб входу</b> реалізовано через окремий middleware, який блокує користувача після кількох невдалих спроб логіну.</p>
+
+    <p><b>Logout</b> реалізовано як видалення refresh token із тимчасового сховища.</p>
+
+  `,
+
+  profile3: `
+    <h2>11. ОНОВЛЕННЯ ПРОФІЛЮ, ЗМІНА ПАРОЛЯ ТА ВИДАЛЕННЯ АККАУНТА</h2>
+
+    <p>Для розширення функціоналу користувача було реалізовано маршрути:</p>
+    <ul>
+      <li><code>PUT /auth/profile</code> — оновлення імені та email;</li>
+      <li><code>PUT /auth/change-password</code> — зміна пароля;</li>
+      <li><code>DELETE /auth/delete-account</code> — видалення власного акаунта.</li>
+    </ul>
+
+    ${codeBlock(`
+// Оновлення профілю
+router.put('/profile', authMiddleware, async (req, res) => {
+    const { name, email } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    if (email && email !== user.email) {
+        user.email = email;
+        user.is_email_confirmed = false;
+        user.email_confirm_token = generateRandomToken();
+    }
+
+    if (name) {
+        user.name = name;
+    }
+
+    await user.save();
+});
+`)}
+
+    ${codeBlock(`
+// Зміна пароля
+router.put('/change-password', authMiddleware, async (req, res) => {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password_hash);
+
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Старий пароль невірний' });
+    }
+
+    user.password_hash = await bcrypt.hash(newPassword, 10);
+    await user.save();
+});
+`)}
+
+  `,
+
+  recovery3: `
+    <h2>12. ВІДНОВЛЕННЯ ПАРОЛЯ, ПІДТВЕРДЖЕННЯ EMAIL ТА GOOGLE LOGIN</h2>
+
+    <p><b>Підтвердження email</b> реалізовано через токен, який генерується під час реєстрації. Після надсилання токена на маршрут <code>/auth/confirm-email</code> користувач позначається як підтверджений.</p>
+
+    ${codeBlock(`
+router.post('/confirm-email', async (req, res) => {
+    const { token } = req.body;
+    const user = await User.findOne({ where: { email_confirm_token: token } });
+
+    user.is_email_confirmed = true;
+    user.email_confirm_token = null;
+    await user.save();
+});
+`)}
+
+    <p><b>Відновлення пароля</b> реалізовано у два етапи:
+    спочатку генерується токен скидання, а потім за цим токеном встановлюється новий пароль.</p>
+
+    ${codeBlock(`
+// Запит на відновлення пароля
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } });
+
+    const resetToken = generateRandomToken();
+    user.reset_password_token = resetToken;
+    await user.save();
+
+    return res.status(200).json({ resetToken });
+});
+`)}
+
+    ${codeBlock(`
+// Скидання пароля
+router.post('/reset-password', async (req, res) => {
+    const { token, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findOne({
+        where: { reset_password_token: token }
+    });
+
+    user.password_hash = await bcrypt.hash(newPassword, 10);
+    user.reset_password_token = null;
+    await user.save();
+});
+`)}
+
+    <p><b>Google login</b> у межах лабораторної реалізовано у вигляді спрощеної заготівлі, яка імітує логіку входу через стороннього постачальника автентифікації.</p>
+
+    ${codeBlock(`
+router.post('/google-login', async (req, res) => {
+    const { email, name } = req.body;
+
+    let user = await User.findOne({ where: { email } });
+
+    if (!user) {
+        user = await User.create({
+            name,
+            email,
+            password_hash: await bcrypt.hash(generateRandomToken(), 10),
+            role: 'user',
+            is_email_confirmed: true
+        });
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    return res.status(200).json({ accessToken, refreshToken });
+});
+`)}
+  `,
+
+  test3: `
+  <h2>13. ДЕМОНСТРАЦІЯ РОБОТИ API</h2>
+
+  <p>Для перевірки роботи серверної частини було використано Postman. Тестування виконувалося послідовно, щоб показати повний цикл роботи користувача в системі: реєстрація, підтвердження email, авторизація, отримання токенів, доступ до захищених маршрутів, оновлення профілю, зміна пароля, відновлення доступу та перевірка ролі адміністратора.</p>
+
+  <h3>13.1 Реєстрація користувача</h3>
+  <p>На першому етапі було виконано реєстрацію нового користувача. Сервер перевірив введені дані, захешував пароль, створив запис у таблиці <code>users</code> та повернув токен для підтвердження email.</p>
+  <img src="img/lab3/postman-register.png" alt="Register" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 1 — Реєстрація користувача та отримання токена підтвердження email</i></p>
+
+  <h3>13.2 Перевірка валідації</h3>
+  <p>Після цього було перевірено роботу валідації. При введенні некоректних даних сервер повертає повідомлення про помилку та HTTP-код <code>400 Bad Request</code>.</p>
+  <img src="img/lab3/postman-validation.png" alt="Validation error" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 2 — Приклад помилки валідації при некоректних даних</i></p>
+
+  <h3>13.3 Підтвердження email</h3>
+  <p>Для активації облікового запису було виконано підтвердження email за допомогою токена, отриманого під час реєстрації. Після цього поле <code>is_email_confirmed</code> змінюється на <code>true</code>.</p>
+  <img src="img/lab3/postman-confirm-email.png" alt="Confirm email" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 3 — Підтвердження email користувача</i></p>
+
+  <h3>13.4 Авторизація користувача</h3>
+  <p>Після підтвердження email було виконано авторизацію користувача. У разі правильного email і пароля сервер повертає <code>accessToken</code> та <code>refreshToken</code>.</p>
+  <img src="img/lab3/postman-login.png" alt="Login" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 4 — Авторизація користувача та отримання accessToken і refreshToken</i></p>
+
+  <h3>13.5 Доступ до захищеного маршруту</h3>
+  <p>Далі було перевірено захищений маршрут <code>/auth/profile</code>. Без токена сервер повертає помилку доступу, а з валідним токеном повертає дані авторизованого користувача.</p>
+  <img src="img/lab3/postman-profile.png" alt="Profile" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 5 — Отримання профілю авторизованого користувача</i></p>
+
+  <h3>13.6 Оновлення профілю</h3>
+  <p>На цьому етапі було перевірено зміну даних користувача. Через запит <code>PUT /auth/profile</code> можна оновити ім’я або email користувача. Якщо email змінюється, він знову потребує підтвердження.</p>
+  <img src="img/lab3/postman-update-profile.png" alt="Update profile" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 6 — Оновлення профілю користувача</i></p>
+
+  <h3>13.7 Зміна пароля</h3>
+  <p>Було реалізовано зміну пароля авторизованого користувача. Сервер перевіряє старий пароль, порівнює новий пароль із підтвердженням і зберігає новий пароль у хешованому вигляді.</p>
+  <img src="img/lab3/postman-change-password.png" alt="Change password" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 7 — Зміна пароля користувача</i></p>
+
+  <h3>13.8 Оновлення access token</h3>
+  <p>Для продовження сесії було перевірено маршрут <code>/auth/refresh-token</code>. Він приймає <code>refreshToken</code> і повертає новий <code>accessToken</code>.</p>
+  <img src="img/lab3/postman-refresh.png" alt="Refresh token" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 8 — Оновлення accessToken за допомогою refreshToken</i></p>
+
+  <h3>13.9 Logout</h3>
+  <p>Після цього було перевірено вихід із системи. При logout refresh token видаляється з тимчасового сховища, тому надалі його не можна використовувати для оновлення access token.</p>
+  <img src="img/lab3/postman-logout.png" alt="Logout" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 9 — Вихід користувача із системи</i></p>
+
+  <h3>13.10 Відновлення пароля</h3>
+  <p>Для перевірки відновлення пароля спочатку було виконано запит <code>/auth/forgot-password</code>, який генерує токен скидання пароля. Після цього через маршрут <code>/auth/reset-password</code> було встановлено новий пароль.</p>
+  <img src="img/lab3/postman-forgot-password.png" alt="Forgot password" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 10 — Генерація токена для відновлення пароля</i></p>
+
+  <img src="img/lab3/postman-reset.png" alt="Reset password" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 11 — Скидання пароля за допомогою reset token</i></p>
+
+  <h3>13.11 Перевірка ролі адміністратора</h3>
+  <p>Окремо було створено користувача з роллю <code>admin</code>. Після авторизації admin-користувач отримує доступ до маршруту <code>/auth/users</code>, який повертає список усіх користувачів. Для звичайного користувача цей маршрут недоступний.</p>
+  <img src="img/lab3/postman-admin.png" alt="Admin route" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 12 — Адмінський маршрут отримання списку користувачів</i></p>
+
+  <h3>13.12 Google login</h3>
+  <p>Також було реалізовано спрощену заготівлю для Google login. Вона імітує вхід через сторонній сервіс: якщо користувача з таким email немає, він створюється автоматично, після чого сервер повертає accessToken і refreshToken.</p>
+  <img src="img/lab3/postman-google-login.png" alt="Google login" style="max-width:100%; height:auto; border:1px solid #ccc; margin-top:10px;">
+  <p><i>Рис. 13 — Спрощена перевірка Google login</i></p>
+
+  <p>Таким чином, тестування в Postman підтвердило коректну роботу основних механізмів автентифікації, авторизації, валідації, захищених маршрутів, refresh token, ролей користувачів, відновлення пароля та підтвердження email.</p>
+`,
+
+  conclusion3: `
+    <h2>14. ВИСНОВКИ</h2>
+
+    <p>У результаті виконання лабораторної роботи було реалізовано повноцінний модуль автентифікації та захисту доступу у власному backend-застосунку. Було створено модель користувача, маршрути реєстрації та авторизації, JWT-аутентифікацію, middleware для перевірки токена, рольову модель доступу та механізми безпеки, зокрема refresh token, обмеження спроб входу, логування помилок, зміну пароля, відновлення пароля та підтвердження email.</p>
+
+    <p>Таким чином, лабораторна робота дозволила не лише закріпити знання про REST API, а й наблизити backend застосунку до структури реальної безпечної серверної системи, яка може використовуватися разом із frontend-частиною вебзастосунку.</p>
+  `
+};
       const lab4 = {};
       const lab5 = {};
       const lab6 = {};
