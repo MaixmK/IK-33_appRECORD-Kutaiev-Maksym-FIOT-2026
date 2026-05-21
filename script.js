@@ -2201,7 +2201,1428 @@ pm2 monit
     <p>Отже, у результаті виконання лабораторної роботи backend-застосунок став більш надійним, контрольованим і підготовленим до подальшого розвитку. Було закріплено практичні навички роботи з middleware, логуванням, завантаженням файлів, обробкою помилок і моніторингом продуктивності Node.js-застосунків.</p>
   `
 };
-      const lab5 = {};
+const lab5 = {
+  theme5: `
+    <h2>1. ТЕМА, МЕТА, ПОСИЛАННЯ</h2>
+
+    <p><b>Тема:</b> Безпека та продуктивність серверних додатків. Безпека Node.js-додатків. Оптимізація запитів і кешування. Тестування API.</p>
+
+    <p><b>Мета роботи:</b> вдосконалити backend-застосунок інтернет-магазину комп’ютерних комплектуючих, реалізувавши базові механізми безпеки, валідацію даних, обмеження кількості запитів, кешування, оптимізацію REST API, Swagger-документацію, Docker-контейнеризацію та тестування API.</p>
+
+    <p>У межах лабораторної роботи було допрацьовано існуючий серверний застосунок на <b>Node.js</b>, <b>Express</b>, <b>Sequelize</b> та <b>MySQL</b>. Проєкт містить маршрути для користувачів, авторизації, категорій, товарів, замовлень, елементів замовлення та завантаження файлів.</p>
+
+    <p>Основну увагу було приділено маршрутам товарів, оскільки саме <code>GET /products</code> є одним із найбільш використовуваних endpoint у застосунку інтернет-магазину.</p>
+
+    <h3 class="muted"> Посилання</h3>
+
+    <div class="link-buttons">
+      <a class="btn" href="https://github.com/MaixmK/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій застосунку</a>
+      <a class="btn" href="https://maixmk.github.io/IK-33_appWEB-Kutaiev-Maksym-FIOT-2026//" target="_blank" rel="noopener">Жива сторінка застосунку</a>
+      <a class="btn" href="https://github.com/MaixmK/IK-33_appRECORD-Kutaiev-Maksym-FIOT-2026" target="_blank" rel="noopener">Репозиторій звітів</a>
+      <a class="btn" href="https://github.com/MaixmK/backend" target="_blank" rel="noopener">Репозиторій Backend-частини</a>
+    </div>
+  `,
+
+  theory5: `
+    <h2>2. КОРОТКІ ТЕОРЕТИЧНІ ВІДОМОСТІ</h2>
+
+    <p><b>Безпека backend-застосунку</b> — це набір підходів, які дозволяють захистити серверну частину від некоректних запитів, надмірного навантаження, несанкціонованого доступу та витоку службової інформації.</p>
+
+    <p><b>Helmet</b> — це middleware для Express, який додає захисні HTTP-заголовки. Наприклад, заголовок <code>X-Content-Type-Options: nosniff</code> забороняє браузеру самостійно визначати тип відповіді.</p>
+
+    <p><b>CORS</b> використовується для налаштування доступу до API з інших доменів. У моєму проєкті CORS дозволяє виконувати запити з frontend-частини до backend API.</p>
+
+    <p><b>Rate limiting</b> — це обмеження кількості запитів від одного клієнта за певний проміжок часу. Такий підхід допомагає захистити сервер від brute-force атак і надмірного навантаження.</p>
+
+    <p><b>Валідація даних</b> потрібна для перевірки даних, які надходять від користувача. У роботі використано <code>express-validator</code>, який перевіряє тіло запиту, параметри маршруту та query-параметри.</p>
+
+    <p><b>JWT</b> використовується для автентифікації користувачів. Після входу користувач отримує access token, який передається в заголовку <code>Authorization</code> для доступу до захищених маршрутів.</p>
+
+    <p><b>Кешування</b> дозволяє тимчасово зберігати результати запитів. Якщо користувач повторно звертається до того самого endpoint з однаковими параметрами, сервер може повернути відповідь із кешу без повторного звернення до бази даних.</p>
+
+    <p><b>Swagger</b> використовується для документування API. <b>Jest</b> і <b>Supertest</b> використовуються для автоматизованого тестування, а <b>Artillery</b> — для навантажувального тестування.</p>
+  `,
+
+  task5: `
+    <h2>3. ПОСТАНОВКА ЗАДАЧІ</h2>
+
+    <p>Необхідно допрацювати існуючий backend-застосунок інтернет-магазину комп’ютерних комплектуючих, підвищивши його безпеку, продуктивність і зручність тестування.</p>
+
+    <p>У межах лабораторної роботи потрібно виконати такі завдання:</p>
+
+    <ul>
+      <li>підключити <code>Helmet</code> для захисту HTTP-заголовків;</li>
+      <li>налаштувати <code>CORS</code> для роботи frontend і backend частин;</li>
+      <li>підключити <code>compression</code> для стискання відповідей сервера;</li>
+      <li>обмежити розмір JSON-запитів до <code>1mb</code>;</li>
+      <li>реалізувати глобальний <code>rate-limit</code> для всіх маршрутів API;</li>
+      <li>реалізувати окремий login-limiter для маршруту авторизації;</li>
+      <li>додати валідацію товарів і query-параметрів через <code>express-validator</code>;</li>
+      <li>використати JWT-автентифікацію для захищених маршрутів;</li>
+      <li>додати перевірку ролі <code>admin</code> для створення, редагування та видалення товарів;</li>
+      <li>реалізувати кешування товарів через Redis або in-memory cache;</li>
+      <li>оптимізувати маршрут <code>GET /products</code>;</li>
+      <li>додати Swagger-документацію;</li>
+      <li>підготувати Dockerfile і docker-compose.yml;</li>
+      <li>додати автоматизовані тести через Jest/Supertest;</li>
+      <li>провести навантажувальне тестування через Artillery;</li>
+      <li>проаналізувати продуктивність до та після оптимізації.</li>
+    </ul>
+  `,
+
+  structure5: `
+    <h2>4. СТРУКТУРА ПРОЄКТУ</h2>
+
+    <p>Після виконання лабораторної роботи структура backend-проєкту була розширена файлами для безпеки, кешування, тестування, документації та контейнеризації.</p>
+
+    <table border="1" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>Файл</th>
+          <th>Призначення</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>app.js</code></td>
+          <td>Основна конфігурація Express-застосунку, підключення middleware, маршрутів, Swagger і глобальної обробки помилок.</td>
+        </tr>
+        <tr>
+          <td><code>server.js</code></td>
+          <td>Запуск сервера, підключення до MySQL, синхронізація моделей і підключення Redis.</td>
+        </tr>
+        <tr>
+          <td><code>routes/product.routes.js</code></td>
+          <td>Маршрути товарів, оптимізований <code>GET /products</code>, кешування, очищення кешу, JWT-захист і перевірка ролі admin.</td>
+        </tr>
+        <tr>
+          <td><code>routes/auth.routes.js</code></td>
+          <td>Реєстрація, підтвердження email, авторизація, refresh token, logout і отримання профілю користувача.</td>
+        </tr>
+        <tr>
+          <td><code>middleware/productValidation.middleware.js</code></td>
+          <td>Правила валідації для id товару, query-параметрів і тіла запиту товару.</td>
+        </tr>
+        <tr>
+          <td><code>middleware/validate.middleware.js</code></td>
+          <td>Централізована обробка помилок валідації.</td>
+        </tr>
+        <tr>
+          <td><code>middleware/auth.middleware.js</code></td>
+          <td>Перевірка JWT access token.</td>
+        </tr>
+        <tr>
+          <td><code>middleware/role.middleware.js</code></td>
+          <td>Перевірка ролі користувача для адміністративних маршрутів.</td>
+        </tr>
+        <tr>
+          <td><code>middleware/loginLimiter.middleware.js</code></td>
+          <td>Обмеження кількості невдалих спроб входу за email.</td>
+        </tr>
+        <tr>
+          <td><code>utils/cache.js</code></td>
+          <td>Модуль кешування через Redis або in-memory cache.</td>
+        </tr>
+        <tr>
+          <td><code>utils/token.js</code></td>
+          <td>Генерація access token і refresh token.</td>
+        </tr>
+        <tr>
+          <td><code>docs/swagger.js</code></td>
+          <td>Swagger-документація API.</td>
+        </tr>
+        <tr>
+          <td><code>tests/app.test.js</code></td>
+          <td>Автоматизовані тести API через Jest і Supertest.</td>
+        </tr>
+        <tr>
+          <td><code>artillery/products-load.yml</code></td>
+          <td>Сценарій навантажувального тестування маршруту товарів.</td>
+        </tr>
+        <tr>
+          <td><code>Dockerfile</code></td>
+          <td>Опис Docker-контейнера Node.js-застосунку.</td>
+        </tr>
+        <tr>
+          <td><code>docker-compose.yml</code></td>
+          <td>Запуск API, MySQL і Redis через Docker Compose.</td>
+        </tr>
+      </tbody>
+    </table>
+  `,
+
+  security5: `
+    <h2>5. РЕАЛІЗАЦІЯ ЗАХИСТУ API</h2>
+
+    <p>Базовий захист API реалізовано у файлі <code>app.js</code>. Для цього було підключено <code>helmet</code>, <code>cors</code>, <code>compression</code>, обмеження розміру запитів і глобальний rate limiter.</p>
+
+    <pre class="code">app.use(helmet());
+
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(compression());
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));</pre>
+
+    <p><code>Helmet</code> додає безпечні HTTP-заголовки. <code>CORS</code> дозволяє налаштувати доступ до API з інших джерел. <code>compression</code> стискає відповіді сервера. Обмеження розміру запиту до <code>1mb</code> допомагає зменшити ризик надсилання занадто великих тіл запиту.</p>
+
+    <h3>Глобальне обмеження кількості запитів</h3>
+
+    <p>Для обмеження кількості запитів у файлі <code>app.js</code> використано бібліотеку <code>express-rate-limit</code>. Middleware <code>apiLimiter</code> застосовується до всіх маршрутів через <code>app.use(apiLimiter)</code>.</p>
+
+    <pre class="code">const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: Number(process.env.RATE_LIMIT_MAX || 3),
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        message: 'Забагато запитів з цієї IP-адреси. Спробуйте пізніше.'
+    }
+});
+
+app.use(apiLimiter);</pre>
+
+    <p>Параметр <code>windowMs</code> задає проміжок часу, протягом якого рахуються запити. У моєму випадку це 60 секунд. Параметр <code>max</code> визначає максимальну кількість запитів з однієї IP-адреси за цей час. Якщо користувач перевищує ліміт, сервер повертає статус <code>Забагато запитів з цієї IP-адреси. Спробуйте пізніше.</code>.</p>
+
+    <figure>
+      <img src="img/lab5/rate-limit.png" alt="Перевірка rate limit" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 1. Перевірка обмеження кількості запитів через Postman</figcaption>
+    </figure>
+
+    <h3>Обмеження спроб входу</h3>
+
+    <p>Окремо у проєкті реалізовано <code>loginLimiter.middleware.js</code>, який використовується у маршруті <code>POST /auth/login</code>. Він блокує користувача за email після кількох невдалих спроб входу.</p>
+
+    <pre class="code">router.post('/login', loginLimiter, async (req, res) =&gt; {
+    // логіка авторизації користувача
+});</pre>
+
+    <figure>
+      <img src="img/lab5/login-limiter.png" alt="Login limiter" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 5. Підключення loginLimiter до маршруту авторизації</figcaption>
+    </figure>
+  `,
+
+  validation5: `
+    <h2>6. РЕАЛІЗАЦІЯ ВАЛІДАЦІЇ ДАНИХ</h2>
+
+    <p>Для перевірки вхідних даних використано бібліотеку <code>express-validator</code>. Усі правила валідації товарів винесено у файл <code>middleware/productValidation.middleware.js</code>.</p>
+
+    <h3>Валідація id товару</h3>
+
+    <pre class="code">const validateProductId = [
+    param('id')
+        .isInt({ min: 1 })
+        .withMessage('ID товару має бути додатним цілим числом')
+];</pre>
+
+    <h3>Валідація query-параметрів</h3>
+
+    <p>Для маршруту <code>GET /products</code> перевіряються параметри <code>page</code>, <code>limit</code>, <code>minPrice</code>, <code>maxPrice</code>, <code>category_id</code>, <code>sortBy</code> і <code>sortOrder</code>.</p>
+
+    <pre class="code">const validateProductQuery = [
+    query('page').optional().isInt({ min: 1 }),
+    query('limit').optional().isInt({ min: 1, max: 100 }),
+    query('minPrice').optional().isFloat({ min: 0 }),
+    query('maxPrice').optional().isFloat({ min: 0 }),
+    query('category_id').optional().isInt({ min: 1 }),
+    query('sortBy').optional().isIn(['id', 'name', 'price', 'rating', 'stock_count']),
+    query('sortOrder').optional().isIn(['ASC', 'DESC', 'asc', 'desc'])
+];</pre>
+
+    <h3>Валідація тіла запиту товару</h3>
+
+    <pre class="code">const validateProductBody = [
+    body('category_id')
+        .isInt({ min: 1 })
+        .withMessage('category_id обов’язковий і має бути додатним числом'),
+
+    body('name')
+        .trim()
+        .isLength({ min: 3, max: 100 })
+        .withMessage('Назва товару має містити від 3 до 100 символів'),
+
+    body('description')
+        .optional({ nullable: true })
+        .trim()
+        .isLength({ max: 1000 })
+        .withMessage('Опис не може перевищувати 1000 символів'),
+
+    body('price')
+        .isFloat({ min: 0.01 })
+        .withMessage('Ціна має бути числом більше 0'),
+
+    body('stock_count')
+        .isInt({ min: 0 })
+        .withMessage('Кількість має бути цілим числом від 0'),
+
+    body('rating')
+        .optional({ nullable: true })
+        .isFloat({ min: 0, max: 5 })
+        .withMessage('Рейтинг має бути від 0 до 5')
+];</pre>
+
+    <p>Централізована обробка помилок валідації виконується у файлі <code>middleware/validate.middleware.js</code>.</p>
+
+    <pre class="code">module.exports = (req, res, next) =&gt; {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            message: 'Помилка валідації даних',
+            errors: errors.array().map((error) =&gt; ({
+                field: error.path,
+                message: error.msg
+            }))
+        });
+    }
+
+    next();
+};</pre>
+
+    <p>Якщо користувач надсилає неправильні дані, сервер повертає статус <code>400 Bad Request</code> і список помилок.</p>
+
+
+
+    <figure>
+      <img src="img/lab5/validation-postman.png" alt="Помилка валідації у Postman" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. Перевірка помилки валідації через Postman</figcaption>
+    </figure>
+  `,
+
+  authRole5: `
+    <h2>7. JWT-АВТЕНТИФІКАЦІЯ ТА ПЕРЕВІРКА РОЛІ ADMIN</h2>
+
+    <p>У застосунку реалізовано JWT-автентифікацію. Після успішної авторизації користувач отримує <code>accessToken</code> і <code>refreshToken</code>. Генерація токенів виконується у файлі <code>utils/token.js</code>.</p>
+
+    <pre class="code">const generateAccessToken = (user) =&gt; {
+    return jwt.sign(
+        {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        },
+        ACCESS_SECRET,
+        { expiresIn: '15m' }
+    );
+};</pre>
+
+    <p>Для перевірки токена використовується <code>auth.middleware.js</code>. Middleware бере токен із заголовка <code>Authorization</code>, перевіряє його і записує дані користувача в <code>req.user</code>.</p>
+
+    <pre class="code">const authHeader = req.headers.authorization;
+
+if (!authHeader) {
+    return res.status(401).json({ message: 'Немає токена' });
+}
+
+const token = authHeader.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : authHeader;
+
+const decoded = jwt.verify(token, ACCESS_SECRET);
+req.user = decoded;</pre>
+
+    <p>Захищений маршрут профілю користувача реалізований у файлі <code>routes/auth.routes.js</code>:</p>
+
+    <pre class="code">router.get('/profile', authMiddleware, async (req, res) =&gt; {
+    const user = await User.findByPk(req.user.id, {
+        attributes: ['id', 'name', 'email', 'role', 'is_email_confirmed', 'created_at']
+    });
+
+    return res.status(200).json({
+        message: 'Доступ дозволено',
+        user
+    });
+});</pre>
+
+    <h3>Перевірка ролі admin</h3>
+
+    <p>Для адміністративних маршрутів використовується <code>role.middleware.js</code>. Він перевіряє, чи є користувач авторизованим і чи має він потрібну роль.</p>
+
+    <pre class="code">module.exports = (...allowedRoles) =&gt; {
+    const roles = allowedRoles
+        .flat()
+        .filter(Boolean)
+        .map((role) =&gt; String(role).toLowerCase());
+
+    return (req, res, next) =&gt; {
+        if (!req.user) {
+            return res.status(401).json({
+                message: 'Користувач не авторизований'
+            });
+        }
+
+        const userRole = String(req.user.role || '').toLowerCase();
+
+        if (!roles.includes(userRole)) {
+            return res.status(403).json({
+                message: 'Доступ заборонено. Недостатньо прав',
+                requiredRoles: roles,
+                userRole
+            });
+        }
+
+        next();
+    };
+};</pre>
+
+    <p>У файлі <code>routes/product.routes.js</code> маршрути створення, редагування та видалення товарів захищені через <code>authMiddleware</code> і <code>roleMiddleware('admin')</code>.</p>
+
+    <pre class="code">router.post(
+    '/',
+    authMiddleware,
+    roleMiddleware('admin'),
+    validateProductBody,
+    validate,
+    async (req, res) =&gt; {
+        // створення товару
+    }
+);</pre>
+
+    <p>Таким чином, звичайний користувач може переглядати товари, але змінювати їх може лише адміністратор.</p>
+
+    <figure>
+      <img src="img/lab5/jwt-auth.png" alt="JWT middleware" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 8. Реалізація перевірки JWT-токена</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/lab5/admin-role-products.png" alt="Admin role products" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 9. Захист маршрутів товарів через роль admin</figcaption>
+    </figure>
+  `,
+  jwt5: `
+  <h2>7. JWT-АВТЕНТИФІКАЦІЯ ТА ПЕРЕВІРКА РОЛІ ADMIN</h2>
+
+  <p>У серверному застосунку інтернет-магазину комп’ютерних комплектуючих реалізовано JWT-автентифікацію. Вона використовується для захисту приватних маршрутів API, щоб доступ до них мали тільки авторизовані користувачі.</p>
+
+  <p>Після успішної авторизації користувач отримує <code>accessToken</code> і <code>refreshToken</code>. Access token використовується для доступу до захищених маршрутів, а refresh token може використовуватися для оновлення access token після завершення його терміну дії.</p>
+
+  <p>Токен передається у заголовку запиту:</p>
+
+  <pre class="code">Authorization: Bearer YOUR_ACCESS_TOKEN</pre>
+
+  <p>Якщо користувач не передає токен, сервер не дозволяє виконати захищену дію та повертає помилку авторизації.</p>
+
+  <figure>
+    <img src="img/lab5/jwt-no-token.png" alt="Спроба доступу без JWT-токена" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 1. Спроба створення товару без JWT-токена</figcaption>
+  </figure>
+
+  <p>На рисунку показано спробу виконати запит <code>POST /products</code> без заголовка <code>Authorization</code>. Сервер повертає помилку, оскільки створення товару є захищеною операцією.</p>
+
+  <h3>Реєстрація адміністратора</h3>
+
+  <p>Для перевірки ролей було створено користувача з роллю <code>admin</code>. Саме адміністратор має право створювати, редагувати та видаляти товари в системі.</p>
+
+  <p>Запит для реєстрації адміністратора:</p>
+
+  <pre class="code">POST http://localhost:3000/auth/register
+
+{
+  "name": "Admin3",
+  "email": "admin3@example.com",
+  "password": "qwerty123",
+  "confirmPassword": "qwerty123",
+  "role": "admin"
+}</pre>
+
+  <figure>
+    <img src="img/lab5/admin-register.png" alt="Реєстрація адміністратора" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 2. Реєстрація користувача з роллю admin</figcaption>
+  </figure>
+
+  <p>Після реєстрації користувач повинен підтвердити email. Для цього використовується токен підтвердження, який повертається сервером після створення облікового запису.</p>
+
+  <pre class="code">POST http://localhost:3000/auth/confirm-email
+
+{
+  "token": "EMAIL_CONFIRM_TOKEN"
+}</pre>
+
+  <figure>
+    <img src="img/lab5/admin-confirm-email.png" alt="Підтвердження email адміністратора" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 3. Підтвердження email адміністратора</figcaption>
+  </figure>
+
+  <h3>Авторизація та отримання JWT-токена</h3>
+
+  <p>Після підтвердження email адміністратор може авторизуватися через маршрут <code>POST /auth/login</code>. У разі правильного email і пароля сервер повертає JWT-токени.</p>
+
+  <pre class="code">POST http://localhost:3000/auth/login
+
+{
+  "email": "admin@example.com",
+  "password": "qwerty123"
+}</pre>
+
+  <p>У відповіді сервер повертає <code>accessToken</code>. Саме його потрібно використовувати у заголовку <code>Authorization</code> для доступу до захищених маршрутів.</p>
+
+  <figure>
+    <img src="img/lab5/admin-login.png" alt="Авторизація адміністратора" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 4. Авторизація адміністратора та отримання accessToken</figcaption>
+  </figure>
+
+  <h3>Перевірка профілю через JWT</h3>
+
+  <p>Для перевірки роботи JWT було виконано запит до маршруту <code>GET /auth/profile</code>. У заголовку запиту було передано access token адміністратора.</p>
+
+  <pre class="code">GET http://localhost:3000/auth/profile
+
+Authorization: Bearer ADMIN_ACCESS_TOKEN</pre>
+
+  <p>Якщо токен правильний, сервер повертає дані авторизованого користувача. У відповіді можна побачити ім’я, email і роль користувача.</p>
+
+  <figure>
+    <img src="img/lab5/profile-jwt.png" alt="Перевірка профілю через JWT" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 5. Отримання профілю користувача за допомогою JWT</figcaption>
+  </figure>
+
+  <h3>Перевірка ролі admin</h3>
+
+  <p>У проєкті створення, редагування та видалення товарів доступне тільки користувачу з роллю <code>admin</code>. Це потрібно для того, щоб звичайні користувачі не могли змінювати каталог товарів інтернет-магазину.</p>
+
+  <p>Для перевірки ролі було виконано запит на створення товару з JWT-токеном адміністратора:</p>
+
+  <pre class="code">POST http://localhost:3000/products
+
+Authorization: Bearer ADMIN_ACCESS_TOKEN
+
+{
+  "category_id": 1,
+  "name": "SSD Samsung 1TB",
+  "description": "NVMe SSD накопичувач",
+  "price": 3499.99,
+  "stock_count": 15,
+  "rating": 4.8
+}</pre>
+
+  <p>Оскільки запит виконується з токеном користувача, який має роль <code>admin</code>, сервер дозволяє створення товару та повертає відповідь зі статусом <code>201 Created</code>.</p>
+
+  <figure>
+    <img src="img/lab5/product-create-admin.png" alt="Створення товару адміністратором" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 6. Успішне створення товару користувачем з роллю admin</figcaption>
+  </figure>
+
+  <p>Таким чином, у застосунку реалізовано два рівні захисту: JWT перевіряє, чи користувач авторизований, а перевірка ролі визначає, чи має він право виконувати адміністративні операції.</p>
+`,
+
+  cache5: `
+    <h2>8. РЕАЛІЗАЦІЯ КЕШУВАННЯ</h2>
+
+    <p>Для кешування у проєкті створено файл <code>utils/cache.js</code>. У ньому реалізовано роботу з Redis і fallback на in-memory cache через бібліотеку <code>node-cache</code>.</p>
+
+    <pre class="code">const memoryCache = new NodeCache({
+    stdTTL: Number(process.env.CACHE_TTL || 60)
+});
+
+let redisClient = null;
+let redisReady = false;</pre>
+
+    <p>Підключення Redis виконується у функції <code>connectRedis()</code>. Якщо змінна <code>REDIS_ENABLED</code> не дорівнює <code>true</code>, Redis не використовується, а застосунок переходить на кешування в пам’яті.</p>
+
+    <pre class="code">async function connectRedis() {
+    if (process.env.REDIS_ENABLED !== 'true') {
+        logger.info('Redis вимкнено. Використовується in-memory cache.');
+        return null;
+    }
+
+    redisClient = createClient({
+        url: process.env.REDIS_URL || 'redis://localhost:6379'
+    });
+
+    await redisClient.connect();
+    redisReady = true;
+}</pre>
+
+    <p>Для роботи з кешем реалізовано функції <code>getCache()</code>, <code>setCache()</code> і <code>delCacheByPrefix()</code>.</p>
+
+    <pre class="code">async function getCache(key) {
+    if (redisReady && redisClient) {
+        const value = await redisClient.get(key);
+        return value ? JSON.parse(value) : null;
+    }
+
+    return memoryCache.get(key) || null;
+}
+
+async function setCache(key, value, ttl = Number(process.env.CACHE_TTL || 60)) {
+    if (redisReady && redisClient) {
+        await redisClient.setEx(key, ttl, JSON.stringify(value));
+        return;
+    }
+
+    memoryCache.set(key, value, ttl);
+}</pre>
+
+    <p>У маршруті <code>GET /products</code> ключ кешу формується на основі query-параметрів. Це дозволяє окремо кешувати різні варіанти запиту, наприклад різні сторінки, сортування або фільтри.</p>
+
+    <pre class="code">const cacheKey = 'products:' + JSON.stringify(req.query);
+const cachedProducts = await getCache(cacheKey);
+
+if (cachedProducts) {
+    return res.json({
+        source: 'cache',
+        ...cachedProducts
+    });
+}</pre>
+
+    <p>Якщо даних у кеші немає, сервер звертається до бази даних, формує відповідь і записує її в кеш:</p>
+
+    <pre class="code">const response = {
+    source: 'database',
+    page,
+    limit,
+    total: result.count,
+    totalPages: Math.ceil(result.count / limit),
+    data: result.rows
+};
+
+await setCache(cacheKey, response);
+res.json(response);</pre>
+
+    <p>Після створення, редагування або видалення товару кеш очищається через <code>delCacheByPrefix('products:')</code>.</p>
+
+    <pre class="code">await delCacheByPrefix('products:');</pre>
+
+    <figure>
+      <img src="img/lab5/cache-database.png" alt="Дані з database" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 11. Перший запит до товарів із джерелом database</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/lab5/cache-hit.png" alt="Дані з cache" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 12. Повторний запит до товарів із джерелом cache</figcaption>
+    </figure>
+  `,
+
+  optimization5: `
+    <h2>9. ОПТИМІЗАЦІЯ МАРШРУТУ GET /products</h2>
+
+    <p>Для оптимізації було обрано маршрут <code>GET /products</code>, оскільки він повертає список товарів інтернет-магазину і може часто використовуватися користувачами.</p>
+
+    <p>У маршруті реалізовано такі механізми оптимізації:</p>
+
+    <ul>
+      <li>пагінація через <code>page</code> і <code>limit</code>;</li>
+      <li>фільтрація за категорією через <code>category_id</code>;</li>
+      <li>фільтрація за мінімальною та максимальною ціною через <code>minPrice</code> і <code>maxPrice</code>;</li>
+      <li>пошук товару за назвою через <code>search</code>;</li>
+      <li>сортування за <code>id</code>, <code>name</code>, <code>price</code>, <code>rating</code> або <code>stock_count</code>;</li>
+      <li>вибір тільки потрібних полів через <code>attributes</code>;</li>
+      <li>підключення категорії товару через <code>include</code>;</li>
+      <li>кешування результату запиту.</li>
+    </ul>
+
+    <pre class="code">const page = Number(req.query.page || 1);
+const limit = Number(req.query.limit || 10);
+const offset = (page - 1) * limit;
+const sortBy = req.query.sortBy || 'id';
+const sortOrder = String(req.query.sortOrder || 'ASC').toUpperCase();
+
+const where = {};
+
+if (req.query.category_id) {
+    where.category_id = Number(req.query.category_id);
+}
+
+if (req.query.minPrice || req.query.maxPrice) {
+    where.price = {};
+    if (req.query.minPrice) where.price[Op.gte] = Number(req.query.minPrice);
+    if (req.query.maxPrice) where.price[Op.lte] = Number(req.query.maxPrice);
+}
+
+if (req.query.search) {
+    where.name = { [Op.like]: '%' + req.query.search + '%' };
+}</pre>
+
+    <p>Для отримання товарів використано метод <code>findAndCountAll()</code>, який дозволяє одночасно отримати записи та загальну кількість елементів для пагінації.</p>
+
+    <pre class="code">const result = await Product.findAndCountAll({
+    where,
+    attributes: ['id', 'category_id', 'name', 'price', 'stock_count', 'rating'],
+    include: [{
+        model: Category,
+        attributes: ['id', 'name']
+    }],
+    order: [[sortBy, sortOrder]],
+    limit,
+    offset
+});</pre>
+
+    <p>У відповіді сервер повертає інформацію про сторінку, ліміт, загальну кількість товарів, кількість сторінок і самі дані.</p>
+
+    <pre class="code">{
+    "source": "database",
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3,
+    "data": []
+}</pre>
+
+    <p>Окремо в моделі <code>Product</code> додано індекси для полів, які часто використовуються під час фільтрації, пошуку та сортування.</p>
+
+    <figure>
+      <img src="img/lab5/products-optimized-postman.png" alt="Оптимізований GET products у Postman" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 14. Перевірка пагінації, фільтрації та сортування товарів</figcaption>
+    </figure>
+  `,
+
+  swagger5: `
+    <h2>10. SWAGGER-ДОКУМЕНТАЦІЯ ТА DOCKER-КОНТЕЙНЕРИЗАЦІЯ</h2>
+
+    <h3>Swagger-документація</h3>
+
+    <p>Для документування API у проєкті створено файл <code>docs/swagger.js</code>. У ньому описано документацію для REST API інтернет-магазину комп’ютерних комплектуючих.</p>
+
+    <pre class="code">const options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'PC Components Store API',
+            version: '1.0.0',
+            description: 'Документація REST API для лабораторної роботи №5'
+        },
+        servers: [
+            { url: 'http://localhost:3000' }
+        ]
+    },
+    apis: []
+};</pre>
+
+    <p>Swagger UI підключено у файлі <code>app.js</code> за маршрутом <code>/api-docs</code>.</p>
+
+    <pre class="code">app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));</pre>
+
+    <p>Після запуску сервера документація доступна за адресою:</p>
+
+    <pre class="code">http://localhost:3000/api-docs</pre>
+
+    <figure>
+      <img src="img/lab5/swagger.png" alt="Swagger документація" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 15. Відображення Swagger-документації API</figcaption>
+    </figure>
+
+    <h3>Docker-контейнеризація</h3>
+
+    <p>Для контейнеризації проєкту створено <code>Dockerfile</code>. Він використовує образ <code>node:20-alpine</code>, копіює файли проєкту, встановлює залежності та запускає сервер.</p>
+
+    <pre class="code">FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]</pre>
+
+    <p>Також створено <code>docker-compose.yml</code>, який дозволяє запускати кілька сервісів одночасно:</p>
+
+    <ul>
+      <li><code>api</code> — Node.js backend-застосунок;</li>
+      <li><code>mysql</code> — база даних MySQL;</li>
+      <li><code>redis</code> — Redis для кешування.</li>
+    </ul>
+
+    <p>Запуск контейнерів виконується командою:</p>
+
+    <pre class="code">docker compose up --build</pre>
+
+    <figure>
+      <img src="img/lab5/docker-compose-file.png" alt="Docker compose файл" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 16. Файл docker-compose.yml для запуску API, MySQL і Redis</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/lab5/docker-compose-run.png" alt="Запуск Docker Compose" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 17. Запуск застосунку через Docker Compose</figcaption>
+    </figure>
+
+        <figure>
+      <img src="img/lab5/docker.png" alt="Запуск Docker Compose" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 17. Запуск застосунку через Docker Compose</figcaption>
+    </figure>
+  `,
+
+testing5: `
+  <h2>11. ТЕСТУВАННЯ API ЧЕРЕЗ POSTMAN</h2>
+
+  <p>Для перевірки роботи backend-застосунку було виконано ручне тестування API через Postman. У процесі тестування перевірялися основні маршрути застосунку, отримання списку товарів, кешування, фільтрація, сортування, пошук, JWT-автентифікація, перевірка ролі адміністратора, валідація даних, rate-limit та login-limiter.</p>
+
+  <h3>1. Перевірка головного маршруту</h3>
+
+  <p>Спочатку було перевірено головний маршрут API:</p>
+
+  <pre class="code">GET http://localhost:3000/</pre>
+
+  <p>Сервер повертає повідомлення про те, що backend-застосунок працює.</p>
+
+  <figure>
+    <img src="img/lab5/api-root.png" alt="Перевірка головного маршруту API" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 18. Перевірка головного маршруту API</figcaption>
+  </figure>
+
+  <h3>2. Перевірка стану сервера</h3>
+
+  <p>Для перевірки стану сервера було використано маршрут:</p>
+
+  <pre class="code">GET http://localhost:3000/status</pre>
+
+  <p>У відповіді сервер повертає інформацію про стан застосунку, час роботи, використання пам’яті та CPU.</p>
+
+  <figure>
+    <img src="img/lab5/api-status.png" alt="Перевірка стану сервера" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 19. Перевірка endpoint /status</figcaption>
+  </figure>
+
+  <h3>3. Отримання списку товарів</h3>
+
+  <p>Для перевірки маршруту товарів було виконано GET-запит з параметрами пагінації:</p>
+
+  <pre class="code">GET http://localhost:3000/products?page=1&amp;limit=10</pre>
+
+  <p>У відповіді сервер повертає список товарів, номер сторінки, ліміт, загальну кількість товарів і кількість сторінок.</p>
+
+  <figure>
+    <img src="img/lab5/products-list.png" alt="Отримання списку товарів" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 20. Отримання списку товарів з пагінацією</figcaption>
+  </figure>
+
+  <h3>4. Перевірка кешування</h3>
+
+  <p>Для перевірки кешування було двічі виконано однаковий GET-запит:</p>
+
+  <pre class="code">GET http://localhost:3000/products?page=1&amp;limit=10&amp;sortBy=price&amp;sortOrder=ASC</pre>
+
+  <p>Перший запит повертає <code>source: database</code>, тобто дані були отримані з бази даних.</p>
+
+  <figure>
+    <img src="img/lab5/cache-database.png" alt="Перший запит до товарів із database" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 21. Перший запит до товарів із джерелом database</figcaption>
+  </figure>
+
+  <p>Повторний запит з такими самими параметрами повертає <code>source: cache</code>, тобто відповідь була отримана з кешу.</p>
+
+  <figure>
+    <img src="img/lab5/cache-hit.png" alt="Повторний запит до товарів із cache" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 22. Повторний запит до товарів із джерелом cache</figcaption>
+  </figure>
+
+  <h3>5. Перевірка пагінації, фільтрації та сортування</h3>
+
+  <p>Для перевірки оптимізованого маршруту було виконано запит з параметрами <code>page</code>, <code>limit</code>, <code>minPrice</code>, <code>maxPrice</code>, <code>sortBy</code> та <code>sortOrder</code>.</p>
+
+  <pre class="code">GET http://localhost:3000/products?page=1&amp;limit=5&amp;minPrice=1000&amp;maxPrice=50000&amp;sortBy=price&amp;sortOrder=DESC</pre>
+
+  <figure>
+    <img src="img/lab5/products-optimized-postman.png" alt="Оптимізований GET products у Postman" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 23. Перевірка пагінації, фільтрації та сортування товарів</figcaption>
+  </figure>
+
+  <h3>6. Перевірка пошуку товарів</h3>
+
+  <p>Для перевірки пошуку було виконано GET-запит з параметром <code>search</code>. Сервер повертає тільки ті товари, у назві яких є вказаний пошуковий запит.</p>
+
+  <pre class="code">GET http://localhost:3000/products?search=SSD</pre>
+
+  <figure>
+    <img src="img/lab5/products-search.png" alt="Пошук товарів" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. Перевірка пошуку товару за назвою</figcaption>
+  </figure>
+
+  <h3>7. Перевірка JWT-захисту без токена</h3>
+
+  <p>Маршрут створення товару є захищеним. Якщо виконати запит без JWT-токена, сервер не дозволяє створити товар і повертає помилку авторизації.</p>
+
+  <pre class="code">POST http://localhost:3000/products</pre>
+
+  <p>Очікуваний результат:</p>
+
+  <pre class="code">{
+  "message": "Немає токена"
+}</pre>
+
+  <figure>
+    <img src="img/lab5/jwt-no-token.png" alt="Спроба створення товару без JWT-токена" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 25. Спроба створення товару без JWT-токена</figcaption>
+  </figure>
+
+  <h3>8. Реєстрація адміністратора</h3>
+
+  <p>Для перевірки ролей було створено користувача з роллю <code>admin</code>.</p>
+
+  <pre class="code">POST http://localhost:3000/auth/register
+
+{
+  "name": "Admin3",
+  "email": "admin3@example.com",
+  "password": "qwerty123",
+  "confirmPassword": "qwerty123",
+  "role": "admin"
+}</pre>
+
+  <figure>
+    <img src="img/lab5/admin-register.png" alt="Реєстрація адміністратора" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 26. Реєстрація користувача з роллю admin</figcaption>
+  </figure>
+
+  <h3>9. Підтвердження email</h3>
+
+  <p>Після реєстрації email користувача було підтверджено за допомогою токена підтвердження.</p>
+
+  <pre class="code">POST http://localhost:3000/auth/confirm-email
+
+{
+  "token": "EMAIL_CONFIRM_TOKEN"
+}</pre>
+
+  <figure>
+    <img src="img/lab5/admin-confirm-email.png" alt="Підтвердження email адміністратора" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 27. Підтвердження email адміністратора</figcaption>
+  </figure>
+
+  <h3>10. Авторизація адміністратора</h3>
+
+  <p>Після підтвердження email було виконано авторизацію адміністратора. У відповіді сервер повернув <code>accessToken</code> і <code>refreshToken</code>.</p>
+
+  <pre class="code">POST http://localhost:3000/auth/login
+
+{
+  "email": "admin3@example.com",
+  "password": "qwerty123"
+}</pre>
+
+  <figure>
+    <img src="img/lab5/admin-login.png" alt="Авторизація адміністратора" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 28. Авторизація адміністратора та отримання JWT-токена</figcaption>
+  </figure>
+
+  <h3>11. Перевірка профілю через JWT</h3>
+
+  <p>Для перевірки роботи JWT було виконано запит до профілю користувача з передачею <code>accessToken</code> у заголовку <code>Authorization</code>.</p>
+
+  <pre class="code">GET http://localhost:3000/auth/profile
+
+Authorization: Bearer ADMIN_ACCESS_TOKEN</pre>
+
+  <figure>
+    <img src="img/lab5/profile-jwt.png" alt="Профіль користувача через JWT" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 29. Отримання профілю авторизованого користувача через JWT</figcaption>
+  </figure>
+
+  <h3>12. Перевірка валідації даних</h3>
+
+  <p>Для перевірки валідації було виконано запит на створення товару з неправильними даними. Запит виконувався з admin-токеном, тому сервер дійшов до перевірки тіла запиту і повернув помилку валідації.</p>
+
+  <pre class="code">POST http://localhost:3000/products
+
+Authorization: Bearer ADMIN_ACCESS_TOKEN
+
+{
+  "category_id": 0,
+  "name": "PC",
+  "price": -1,
+  "stock_count": -5,
+  "rating": 10
+}</pre>
+
+  <figure>
+    <img src="img/lab5/validation-postman.png" alt="Помилка валідації" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 30. Перевірка помилки валідації через Postman</figcaption>
+  </figure>
+
+  <h3>13. Успішне створення товару адміністратором</h3>
+
+  <p>Після авторизації адміністратор може створити товар, передавши accessToken у заголовку <code>Authorization</code>. Це підтверджує роботу JWT-захисту та перевірки ролі <code>admin</code>.</p>
+
+  <pre class="code">POST http://localhost:3000/products
+
+Authorization: Bearer ADMIN_ACCESS_TOKEN
+
+{
+  "category_id": 1,
+  "name": "SSD Samsung 1TB",
+  "description": "NVMe SSD накопичувач",
+  "price": 3499.99,
+  "stock_count": 15,
+  "rating": 4.8
+}</pre>
+
+  <figure>
+    <img src="img/lab5/product-create-admin.png" alt="Створення товару адміністратором" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 31. Успішне створення товару адміністратором</figcaption>
+  </figure>
+
+  <h3>14. Перевірка rate-limit</h3>
+
+  <p>Для перевірки глобального обмеження кількості запитів було кілька разів поспіль виконано один і той самий запит. Після перевищення ліміту сервер повернув статус <code>429 Too Many Requests</code>.</p>
+
+  <figure>
+    <img src="img/lab5/rate-limit.png" alt="Rate limit" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 32. Перевірка спрацювання rate-limit</figcaption>
+  </figure>
+
+  <h3>15. Перевірка login-limiter</h3>
+
+  <p>Для перевірки обмеження невдалих спроб входу було кілька разів виконано запит <code>POST /auth/login</code> з неправильним паролем. Після перевищення допустимої кількості спроб сервер повернув повідомлення про тимчасове блокування входу.</p>
+
+  <figure>
+    <img src="img/lab5/login-limiter.png" alt="Login limiter" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+    <figcaption>Рис. 33. Перевірка обмеження невдалих спроб входу</figcaption>
+  </figure>
+`,
+  autoTesting5: `
+    <h2>12. АВТОМАТИЗОВАНЕ ТЕСТУВАННЯ API</h2>
+
+    <p>Для автоматизованого тестування API використано <code>Jest</code> і <code>Supertest</code>. Тести знаходяться у файлі <code>tests/app.test.js</code>.</p>
+
+    <p>У тестах перевіряється:</p>
+
+    <ul>
+      <li>доступність головного маршруту <code>GET /</code>;</li>
+      <li>робота маршруту <code>GET /status</code>;</li>
+      <li>наявність security headers від Helmet;</li>
+      <li>захист маршруту <code>POST /products</code> без JWT-токена;</li>
+      <li>валідація некоректних даних при створенні товару з admin-токеном.</li>
+    </ul>
+
+    <p>Приклад тесту головного маршруту:</p>
+
+    <pre class="code">test('GET / повертає статус 200', async () =&gt; {
+    const response = await request(app).get('/');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Backend працює');
+});</pre>
+
+    <p>Приклад тесту для <code>/status</code>:</p>
+
+    <pre class="code">test('GET /status повертає інформацію про сервер', async () =&gt; {
+    const response = await request(app).get('/status');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe('OK');
+    expect(response.body).toHaveProperty('memoryUsage');
+});</pre>
+
+    <p>Після підключення JWT-захисту до <code>POST /products</code> запит без токена має повертати <code>401</code>, а не <code>400</code>.</p>
+
+    <pre class="code">test('POST /products без токена повертає 401', async () =&gt; {
+    const response = await request(app)
+        .post('/products')
+        .send({
+            category_id: 1,
+            name: 'SSD Samsung 1TB',
+            price: 3499.99,
+            stock_count: 15
+        });
+
+    expect(response.statusCode).toBe(401);
+});</pre>
+
+    <p>Тест на наявність заголовків Helmet:</p>
+
+    <pre class="code">test('Helmet додає безпечні HTTP-заголовки', async () =&gt; {
+    const response = await request(app).get('/');
+
+    expect(response.headers).toHaveProperty('x-content-type-options');
+});</pre>
+
+    <p>Запуск тестів виконується командою:</p>
+
+    <pre class="code">npm test</pre>
+
+    <figure>
+      <img src="img/lab5/jest-tests-result.png" alt="Результат Jest тестів" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. 34. Результат виконання автоматизованих тестів</figcaption>
+    </figure>
+  `,
+
+  loadTesting5: `
+    <h2>13. НАВАНТАЖУВАЛЬНЕ ТЕСТУВАННЯ ЧЕРЕЗ ARTILLERY</h2>
+
+    <p>Для перевірки роботи API під навантаженням використано Artillery. У проєкті створено файл <code>artillery/products-load.yml</code>, який тестує маршрут <code>GET /products</code>.</p>
+
+    <pre class="code">config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30
+      arrivalRate: 10
+scenarios:
+  - name: "Products cache and pagination load test"
+    flow:
+      - get:
+          url: "/products?page=1&amp;limit=10&amp;sortBy=price&amp;sortOrder=ASC"
+      - get:
+          url: "/products?page=1&amp;limit=10&amp;sortBy=price&amp;sortOrder=ASC"</pre>
+
+    <p>У сценарії два рази виконується однаковий GET-запит. Це дозволяє перевірити не тільки навантаження на API, а й роботу кешування, оскільки повторний запит може бути оброблений швидше.</p>
+
+    <p>Запуск навантажувального тестування:</p>
+
+    <pre class="code">npm run test:load</pre>
+
+    <p>Також можна виконати швидкий тест командою:</p>
+
+    <pre class="code">artillery quick --count 50 --num 20 http://localhost:3000/products</pre>
+
+    <p>У результаті Artillery показує кількість запитів, статуси відповідей, час відповіді та кількість завершених віртуальних користувачів.</p>
+
+    <pre class="code">PS C:\Frontend\backend> npm run test:load
+
+> backend@1.0.0 test:load
+> artillery run artillery/products-load.yml
+
+Test run id: tz56k_3jaxwkt9ezzg55ywzf9d5edajxmxb_py37
+Phase started: unnamed (index: 0, duration: 30s) 19:26:39(+0300)
+
+--------------------------------------
+Metrics for period to: 19:26:50(+0300) (width: 9.507s)
+--------------------------------------
+
+http.codes.200: ................................................................ 100
+http.codes.429: ................................................................ 100
+http.downloaded_bytes: ......................................................... 100603
+http.request_rate: ............................................................. 20/sec
+http.requests: ................................................................. 200
+http.response_time:
+  min: ......................................................................... 0
+  max: ......................................................................... 21
+  mean: ........................................................................ 0.9
+  median: ...................................................................... 1
+  p95: ......................................................................... 2
+  p99: ......................................................................... 3
+http.response_time.2xx:
+  min: ......................................................................... 0
+  max: ......................................................................... 21
+  mean: ........................................................................ 1.3
+  median: ...................................................................... 1
+  p95: ......................................................................... 2
+  p99: ......................................................................... 4
+http.response_time.4xx:
+  min: ......................................................................... 0
+  max: ......................................................................... 2
+  mean: ........................................................................ 0.6
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 2
+http.responses: ................................................................ 200
+vusers.completed: .............................................................. 100
+vusers.created: ................................................................ 100
+vusers.created_by_name.Products cache and pagination load test: ................ 100
+vusers.failed: ................................................................. 0
+vusers.session_length:
+  min: ......................................................................... 3.3
+  max: ......................................................................... 44.9
+  mean: ........................................................................ 6.9
+  median: ...................................................................... 4.9
+  p95: ......................................................................... 24.3
+  p99: ......................................................................... 25.8
+
+
+--------------------------------------
+Metrics for period to: 19:27:00(+0300) (width: 9.507s)
+--------------------------------------
+
+http.codes.429: ................................................................ 200
+http.downloaded_bytes: ......................................................... 21800
+http.request_rate: ............................................................. 20/sec
+http.requests: ................................................................. 200
+http.response_time:
+  min: ......................................................................... 0
+  max: ......................................................................... 1
+  mean: ........................................................................ 0.6
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 1
+http.response_time.4xx:
+  min: ......................................................................... 0
+  max: ......................................................................... 1
+  mean: ........................................................................ 0.6
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 1
+http.responses: ................................................................ 200
+vusers.completed: .............................................................. 100
+vusers.created: ................................................................ 100
+vusers.created_by_name.Products cache and pagination load test: ................ 100
+vusers.failed: ................................................................. 0
+vusers.session_length:
+  min: ......................................................................... 3
+  max: ......................................................................... 5.8
+  mean: ........................................................................ 3.8
+  median: ...................................................................... 3.7
+  p95: ......................................................................... 4.7
+  p99: ......................................................................... 5.5
+
+
+Phase completed: unnamed (index: 0, duration: 30s) 19:27:09(+0300)
+
+--------------------------------------
+Metrics for period to: 19:27:10(+0300) (width: 9.507s)
+--------------------------------------
+
+http.codes.429: ................................................................ 200
+http.downloaded_bytes: ......................................................... 21800
+http.request_rate: ............................................................. 20/sec
+http.requests: ................................................................. 200
+http.response_time:
+  min: ......................................................................... 0
+  max: ......................................................................... 2
+  mean: ........................................................................ 0.6
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 1
+http.response_time.4xx:
+  min: ......................................................................... 0
+  max: ......................................................................... 2
+  mean: ........................................................................ 0.6
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 1
+http.responses: ................................................................ 200
+vusers.completed: .............................................................. 100
+vusers.created: ................................................................ 100
+vusers.created_by_name.Products cache and pagination load test: ................ 100
+vusers.failed: ................................................................. 0
+vusers.session_length:
+  min: ......................................................................... 3.2
+  max: ......................................................................... 4.6
+  mean: ........................................................................ 3.6
+  median: ...................................................................... 3.6
+  p95: ......................................................................... 4.2
+  p99: ......................................................................... 4.5
+
+
+All VUs finished. Total time: 31 seconds
+
+--------------------------------
+Summary report @ 19:27:11(+0300)
+--------------------------------
+
+http.codes.200: ................................................................ 100
+http.codes.429: ................................................................ 500
+http.downloaded_bytes: ......................................................... 144203
+http.request_rate: ............................................................. 20/sec
+http.requests: ................................................................. 600
+http.response_time:
+  min: ......................................................................... 0
+  max: ......................................................................... 21
+  mean: ........................................................................ 0.7
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 2
+http.response_time.2xx:
+  min: ......................................................................... 0
+  max: ......................................................................... 21
+  mean: ........................................................................ 1.3
+  median: ...................................................................... 1
+  p95: ......................................................................... 2
+  p99: ......................................................................... 4
+http.response_time.4xx:
+  min: ......................................................................... 0
+  max: ......................................................................... 2
+  mean: ........................................................................ 0.6
+  median: ...................................................................... 1
+  p95: ......................................................................... 1
+  p99: ......................................................................... 2
+http.responses: ................................................................ 600
+vusers.completed: .............................................................. 300
+vusers.created: ................................................................ 300
+vusers.created_by_name.Products cache and pagination load test: ................ 300
+vusers.failed: ................................................................. 0
+vusers.session_length:
+  min: ......................................................................... 3
+  max: ......................................................................... 44.9
+  mean: ........................................................................ 4.8
+  median: ...................................................................... 3.8
+  p95: ......................................................................... 6.4
+  p99: ......................................................................... 25.3</pre>
+  `,
+
+  performance5: `
+    <h2>14. АНАЛІЗ ПРОДУКТИВНОСТІ ДО ТА ПІСЛЯ ОПТИМІЗАЦІЇ</h2>
+
+    <p>До оптимізації маршрут <code>GET /products</code> міг створювати зайве навантаження на базу даних, оскільки кожен запит потребував звернення до MySQL. Крім того, без пагінації сервер міг повертати занадто великий обсяг даних.</p>
+
+    <p>Після оптимізації було реалізовано пагінацію, фільтрацію, пошук, сортування, вибір тільки потрібних полів, підключення категорії товару, індекси в моделі та кешування результатів.</p>
+
+    <table border="1" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>Показник</th>
+          <th>До оптимізації</th>
+          <th>Після оптимізації</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Звернення до бази даних</td>
+          <td>При кожному GET-запиті</td>
+          <td>Перший запит бере дані з БД, повторний може повертатися з кешу</td>
+        </tr>
+        <tr>
+          <td>Обсяг відповіді</td>
+          <td>Міг бути великим</td>
+          <td>Обмежується через <code>limit</code> і вибір потрібних полів</td>
+        </tr>
+        <tr>
+          <td>Пагінація</td>
+          <td>Відсутня або не була основним механізмом</td>
+          <td>Реалізована через <code>page</code> і <code>limit</code></td>
+        </tr>
+        <tr>
+          <td>Фільтрація</td>
+          <td>Обмежена</td>
+          <td>Є фільтрація за категорією та ціною</td>
+        </tr>
+        <tr>
+          <td>Пошук</td>
+          <td>Обмежений</td>
+          <td>Є пошук за назвою товару</td>
+        </tr>
+        <tr>
+          <td>Сортування</td>
+          <td>Обмежене</td>
+          <td>Є сортування за <code>id</code>, <code>name</code>, <code>price</code>, <code>rating</code>, <code>stock_count</code></td>
+        </tr>
+        <tr>
+          <td>Кешування</td>
+          <td>Відсутнє</td>
+          <td>Redis або in-memory cache</td>
+        </tr>
+        <tr>
+          <td>Захист від надмірних запитів</td>
+          <td>Відсутній</td>
+          <td>Реалізовано через <code>express-rate-limit</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Під час перевірки перший запит до <code>/products</code> повертає <code>source: database</code>. Повторний запит з такими самими query-параметрами повертає <code>source: cache</code>. Це підтверджує, що повторні запити не потребують повторного звернення до бази даних.</p>
+
+    <figure>
+      <img src="img/lab5/performance-before.png" alt="До оптимізації" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. Перевірка роботи API до використання кешування</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/lab5/cache-hit.png" alt="Після оптимізації" style="max-width:100%; border:1px solid #ccc; border-radius:8px;">
+      <figcaption>Рис. Перевірка роботи API після оптимізації та кешування</figcaption>
+    </figure>
+    <p>Для порівняння продуктивності було виконано два однакові GET-запити до маршруту <code>/products</code>. Перший запит отримав дані з бази даних, про що свідчить поле <code>source: database</code>. Повторний запит з такими самими параметрами був оброблений через кеш і повернув <code>source: cache</code>. Це показує, що після оптимізації сервер може не звертатися повторно до бази даних для однакових запитів.</p>
+  `,
+
+  examples5: `
+    <h2>15. ПРИКЛАДИ ЗАПИТІВ ДЛЯ ПЕРЕВІРКИ</h2>
+
+    <h3>Головний маршрут</h3>
+    <pre class="code">curl http://localhost:3000/</pre>
+
+    <h3>Стан сервера</h3>
+    <pre class="code">curl http://localhost:3000/status</pre>
+
+    <h3>Swagger-документація</h3>
+    <pre class="code">http://localhost:3000/api-docs</pre>
+
+    <h3>Отримання списку товарів</h3>
+    <pre class="code">curl -i "http://localhost:3000/products?page=1&amp;limit=10"</pre>
+
+    <h3>Фільтрація товарів за ціною</h3>
+    <pre class="code">curl -i "http://localhost:3000/products?minPrice=1000&amp;maxPrice=50000"</pre>
+
+    <h3>Пошук товару за назвою</h3>
+    <pre class="code">curl -i "http://localhost:3000/products?search=RTX"</pre>
+
+    <h3>Сортування товарів за ціною</h3>
+    <pre class="code">curl -i "http://localhost:3000/products?sortBy=price&amp;sortOrder=DESC"</pre>
+
+    <h3>Реєстрація адміністратора</h3>
+    <pre class="code">curl -X POST http://localhost:3000/auth/register \\
+  -H "Content-Type: application/json" \\
+  -d "{\\"name\\":\\"Admin\\",\\"email\\":\\"admin@example.com\\",\\"password\\":\\"qwerty123\\",\\"confirmPassword\\":\\"qwerty123\\",\\"role\\":\\"admin\\"}"</pre>
+
+    <h3>Підтвердження email</h3>
+    <pre class="code">curl -X POST http://localhost:3000/auth/confirm-email \\
+  -H "Content-Type: application/json" \\
+  -d "{\\"token\\":\\"EMAIL_CONFIRM_TOKEN\\"}"</pre>
+
+    <h3>Авторизація</h3>
+    <pre class="code">curl -X POST http://localhost:3000/auth/login \\
+  -H "Content-Type: application/json" \\
+  -d "{\\"email\\":\\"admin@example.com\\",\\"password\\":\\"qwerty123\\"}"</pre>
+
+    <h3>Отримання профілю</h3>
+    <pre class="code">curl http://localhost:3000/auth/profile \\
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</pre>
+
+    <h3>Створення товару адміністратором</h3>
+    <pre class="code">curl -X POST http://localhost:3000/products \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \\
+  -d "{\\"category_id\\":1,\\"name\\":\\"SSD Samsung 1TB\\",\\"description\\":\\"NVMe SSD накопичувач\\",\\"price\\":3499.99,\\"stock_count\\":15,\\"rating\\":4.8}"</pre>
+
+    <h3>Запуск автоматизованих тестів</h3>
+    <pre class="code">npm test</pre>
+
+    <h3>Запуск навантажувального тестування</h3>
+    <pre class="code">npm run test:load</pre>
+
+    <h3>Запуск через Docker</h3>
+    <pre class="code">docker compose up --build</pre>
+  `,
+
+  questions5: `
+    <h2>16. КОНТРОЛЬНІ ЗАПИТАННЯ</h2>
+
+    <h3>1. Що таке Helmet у Node.js?</h3>
+    <p>Helmet — це middleware для Express, який додає захисні HTTP-заголовки та допомагає зменшити ризик типових атак на веб-застосунок.</p>
+
+    <h3>2. Для чого використовується rate limiting?</h3>
+    <p>Rate limiting використовується для обмеження кількості запитів від одного клієнта за певний проміжок часу. Це допомагає захистити API від brute-force атак і надмірного навантаження.</p>
+
+    <h3>3. Які переваги кешування?</h3>
+    <p>Кешування зменшує кількість звернень до бази даних, пришвидшує повторні запити та знижує навантаження на сервер.</p>
+
+    <h3>4. Чим відрізняється unit testing від integration testing?</h3>
+    <p>Unit testing перевіряє окремі функції або модулі, а integration testing перевіряє взаємодію кількох частин системи, наприклад маршруту, middleware і бази даних.</p>
+
+    <h3>5. Для чого потрібна валідація даних?</h3>
+    <p>Валідація потрібна для перевірки коректності даних, які надходять від користувача. Вона не дозволяє обробляти порожні, неправильні або небезпечні значення.</p>
+
+    <h3>6. Що таке JWT?</h3>
+    <p>JWT — це токен, який використовується для автентифікації користувача. Він містить закодовану інформацію про користувача і дозволяє серверу перевіряти доступ до захищених маршрутів.</p>
+
+    <h3>7. Які типи кешування існують?</h3>
+    <p>Існують in-memory cache, Redis cache, CDN cache, browser cache та кешування запитів до бази даних.</p>
+
+    <h3>8. Які існують способи оптимізації API?</h3>
+    <p>До способів оптимізації API належать пагінація, кешування, індексація бази даних, фільтрація, сортування, вибір лише потрібних полів, стиснення відповідей та оптимізація SQL-запитів.</p>
+  `,
+
+  conclusion5: `
+    <h2>17. ВИСНОВОК</h2>
+
+    <p>У ході виконання лабораторної роботи було вдосконалено backend-застосунок інтернет-магазину комп’ютерних комплектуючих. Було реалізовано механізми безпеки, оптимізації, кешування, документування та тестування API.</p>
+
+    <p>У файлі <code>app.js</code> було підключено <code>Helmet</code>, <code>CORS</code>, <code>compression</code>, обмеження розміру запитів і глобальний <code>rate-limit</code>. Це підвищило базовий рівень захисту серверного застосунку та дозволило обмежити кількість запитів від одного клієнта.</p>
+
+    <p>Для перевірки вхідних даних було використано <code>express-validator</code>. Правила валідації для товарів і query-параметрів винесено в окремий middleware, а помилки обробляються централізовано через <code>validate.middleware.js</code>.</p>
+
+    <p>У застосунку реалізовано JWT-автентифікацію. Захищені маршрути перевіряють access token, а для адміністративних операцій з товарами використовується <code>roleMiddleware('admin')</code>. Завдяки цьому створювати, редагувати та видаляти товари може лише адміністратор.</p>
+
+    <p>Для підвищення продуктивності було реалізовано кешування товарів через Redis або in-memory cache. Перший запит до <code>/products</code> отримує дані з бази даних, а повторний запит з такими самими параметрами може повертатися з кешу. Після зміни товарів кеш очищається.</p>
+
+    <p>Маршрут <code>GET /products</code> було оптимізовано за допомогою пагінації, фільтрації, пошуку, сортування, вибору потрібних полів і підключення категорії товару. Це зменшує обсяг відповіді та навантаження на базу даних.</p>
+
+    <p>Також було додано Swagger-документацію, Docker-контейнеризацію, автоматизовані тести через Jest/Supertest і навантажувальне тестування через Artillery. У результаті застосунок став більш захищеним, продуктивним, краще задокументованим і зручним для подальшого розвитку.</p>
+  `
+};
       const lab6 = {};
 
 
